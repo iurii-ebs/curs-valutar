@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+DB_USER = os.getenv('DB_USER')
+
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -19,8 +26,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '35809-h&1+qi%vv+av7j@v19r97*l-sv)#^z6b%e97wq3ravh7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -83,6 +88,18 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# PostgreSQL
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres_db1',
+#         'USER': DB_USER,
+#         'PASSWORD': DB_PASSWORD,
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
