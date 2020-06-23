@@ -2,7 +2,7 @@ from rest_framework import serializers
 from apps.wallet.models import (Currency,
                                 RatesHistory,
                                 Wallet,
-                                WalletOperations)
+                                WalletOperation)
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class WalletSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class WalletOperationsSerializer(serializers.ModelSerializer):
+class WalletOperationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WalletOperations
+        model = WalletOperation
         fields = '__all__'
