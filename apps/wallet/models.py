@@ -6,6 +6,11 @@ class Currency(models.Model):
     name = models.CharField(max_length=50)
     abbr = models.CharField(max_length=50)
 
+    def __str__(self):
+        return '{}'.format(
+            self.abbr
+        )
+
 
 class RatesHistory(models.Model):
     currency_id = models.ForeignKey(
@@ -13,6 +18,11 @@ class RatesHistory(models.Model):
     )
     rate = models.FloatField()
     date = models.DateField(db_index=True, auto_now_add=True)
+
+    def __str__(self):
+        return '{}, Rate: {}, {}'.format(
+            self.currency_id, self.rate, self.date
+        )
 
 
 class Wallet(models.Model):
@@ -24,8 +34,13 @@ class Wallet(models.Model):
     )
     total_amount = models.FloatField()
 
+    def __str__(self):
+        return 'User: {}'.format(
+            self.user_id
+        )
 
-class WalletOperations(models.Model):
+
+class WalletOperation(models.Model):
     wallet_id = models.ForeignKey(
         Wallet, related_name='operationitem', on_delete=models.CASCADE
     )
@@ -33,3 +48,8 @@ class WalletOperations(models.Model):
         RatesHistory, related_name='historyitem', on_delete=models.CASCADE
     )
     amount = models.FloatField()
+
+    def __str__(self):
+        return '{}, {}, {}'.format(
+            self.wallet_id, self.rate_id, self.amount
+        )
