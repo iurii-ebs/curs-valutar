@@ -5,3 +5,4 @@ django-cors-headers==3.3.0
 beautifulsoup4==4.9.1
 requests==2.20.1
 elasticsearch==7.8.0
+drf_util==0.0.27
