@@ -8,7 +8,7 @@ class Currency(models.Model):
 
 
 class RatesHistory(models.Model):
-    currency_id = models.ForeignKey(
+    currency = models.ForeignKey(
         Currency, related_name='currencyitem', on_delete=models.CASCADE
     )
     rate = models.FloatField()

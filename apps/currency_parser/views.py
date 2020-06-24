@@ -6,9 +6,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .parser import parse_currency as parser
-from ..wallet.models import Currency, RatesHistory
+from ..wallet.models import Currency, RatesHistory, WalletOperations
 from .parser import today
-from ..wallet.serializers import CurrencySerializer, RatesHistorySerializer
+from ..wallet.serializers import CurrencySerializer, RatesHistorySerializer, CurrentRatesSerializer
 
 
 @api_view(['GET'])
@@ -41,18 +41,18 @@ def parse_currency(request):
     valid_date = date_raw[2] + "-" + date_raw[1] + "-" + date_raw[0]
 
     # if exists data for today get data from DB
-    rates = RatesHistory.objects.filter(date=valid_date)
-    if len(rates) == 0:
+    if not RatesHistory.objects.filter(date=valid_date).exists():
         currency_list = parser()
         for currency in currency_list['Currency_list']:
             # Get object from Currency table to refer in RatesHistory
-            currency_id = Currency.objects.get(abbr=currency['Abbr'])
+            currency = Currency.objects.get(abbr=currency['Abbr'])
             rate = RatesHistory()
-            rate.currency_id = currency_id
+            rate.currency = currency
             rate.rate = currency['Rate']
             rate.save()
-        rates = RatesHistory.objects.filter(date=valid_date)
 
-    serializer = RatesHistorySerializer(rates, many=True)
+    rates = RatesHistory.objects.filter(date=valid_date)
+
+    serializer = CurrentRatesSerializer(rates, many=True)
 
     return Response(serializer.data)
