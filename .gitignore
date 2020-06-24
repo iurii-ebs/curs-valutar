@@ -128,12 +128,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# parser ignore
-.idea/
-config/
-apps/users/
-apps/wallet/
-manage.py
-README.md
-apps/currency_parser/history/

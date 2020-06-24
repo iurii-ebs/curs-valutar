@@ -5,7 +5,7 @@ from datetime import date as datecreated
 from apps.wallet.models import (Currency,
                                 RatesHistory,
                                 Wallet,
-                                WalletOperations)
+                                WalletOperation)
 
 
 class WalletTests(TestCase):
@@ -25,24 +25,24 @@ class WalletTests(TestCase):
 
         # Wallet table test data
         wallet1 = Wallet.objects.create(
-            user_id=testuser1, currency_id=testcurrency1, total_amount=170000
+            user=testuser1, currency=testcurrency1
         )
         wallet1.save()
 
         # Rates history table test data
         ratehistory1 = RatesHistory.objects.create(
-            currency_id=testcurrency1, rate='11.8621'
+            currency=testcurrency1, rate='11.8621'
         )
         ratehistory1.save()
 
         # Wallet operations table test data
-        walletoperations1 = WalletOperations.objects.create(
-            wallet_id=wallet1, rate_id=ratehistory1, amount=100000
+        walletoperations1 = WalletOperation.objects.create(
+            wallet=wallet1, rate=ratehistory1, amount=100000
         )
         walletoperations1.save()
 
-        walletoperations2 = WalletOperations.objects.create(
-            wallet_id=wallet1, rate_id=ratehistory1, amount=70000
+        walletoperations2 = WalletOperation.objects.create(
+            wallet=wallet1, rate=ratehistory1, amount=70000
         )
         walletoperations2.save()
 
@@ -55,23 +55,21 @@ class WalletTests(TestCase):
 
     def test_wallet(self):
         wallet = Wallet.objects.get(id=1)
-        user_id = f'{wallet.user_id}'
-        currency_id = f'{wallet.currency_id}'
-        total_amount = wallet.total_amount
-        self.assertEqual(user_id, 'testuser1')
-        self.assertEqual(currency_id, f'{Currency.objects.get(id=1)}')
-        self.assertEqual(total_amount, float(170000))
+        user = f'{wallet.user}'
+        currency = f'{wallet.currency}'
+        self.assertEqual(user, 'testuser1')
+        self.assertEqual(currency, f'{Currency.objects.get(id=1)}')
 
     def test_rates_history(self):
         rate_history = RatesHistory.objects.get(id=1)
-        currency_id = f'{rate_history.currency_id}'
+        currency = f'{rate_history.currency}'
         rate = f'{rate_history.rate}'
         date = f'{rate_history.date}'
-        self.assertEqual(currency_id, f'{Currency.objects.get(id=1)}')
+        self.assertEqual(currency, f'{Currency.objects.get(id=1)}')
         self.assertEqual(rate, '11.8621')
         self.assertEqual(date, f'{datecreated.today()}')
 
     def test_wallet_operations(self):
-        wallet_operations = WalletOperations.objects.filter(wallet_id=1)
+        wallet_operations = WalletOperation.objects.filter(wallet=1)
         amount = sum([i.amount for i in wallet_operations])
         self.assertEqual(amount, float(170000))

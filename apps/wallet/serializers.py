@@ -1,8 +1,11 @@
 from rest_framework import serializers
+from django.db import models
 from apps.wallet.models import (Currency,
                                 RatesHistory,
                                 Wallet,
                                 WalletOperation)
+
+from apps.users.serializers import UserSerializer
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -17,7 +20,17 @@ class RatesHistorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CurrentRatesSerializer(serializers.ModelSerializer):
+    currency = CurrencySerializer()
+
+    class Meta:
+        model = RatesHistory
+        fields = ['rate', 'date', 'currency']
+
+
 class WalletSerializer(serializers.ModelSerializer):
+    user = UserSerializer(required=False)
+
     class Meta:
         model = Wallet
         fields = '__all__'
