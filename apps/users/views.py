@@ -34,15 +34,10 @@ class RegisterUserView(GenericAPIView):
         return Response(UserSerializer(user).data)
 
 
-@api_view(http_method_names=['POST', 'GET'])
+@api_view(http_method_names=['POST'])
 @permission_classes([AllowAny])
 def register_user_view(request):
-    if request.method == 'GET':
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
+    if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -61,3 +56,5 @@ def register_user_view(request):
             return Response(UserSerializer(user_new).data)
 
         return Response(serializer.errors)
+
+    return Response()
