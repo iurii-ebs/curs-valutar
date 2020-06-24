@@ -6,6 +6,7 @@ from drf_util.decorators import serialize_decorator
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 
 from apps.users.serializers import UserSerializer
 
@@ -31,3 +32,21 @@ class RegisterUserView(GenericAPIView):
         user.save()
 
         return Response(UserSerializer(user).data)
+
+
+@api_view(http_method_names=['POST'])
+@permission_classes([AllowAny])
+def register_user_view(request):
+    validated_data = request.serializer.validated_data
+
+    user = User.objects.create(
+        first_name=validated_data['first_name'],
+        last_name=validated_data['last_name'],
+        username=validated_data['username'],
+        is_superuser=True,
+        is_staff=True
+    )
+    user.set_password(validated_data['password'])
+    user.save()
+
+    return Response(UserSerializer(user).data)
