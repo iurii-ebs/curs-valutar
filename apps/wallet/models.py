@@ -16,10 +16,10 @@ class RatesHistory(models.Model):
 
 
 class Wallet(models.Model):
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         User, related_name='walletitem', on_delete=models.CASCADE
     )
-    currency_id = models.ForeignKey(
+    currency = models.ForeignKey(
         Currency, related_name='historyitem', on_delete=models.CASCADE
     )
     total_amount = models.FloatField()
