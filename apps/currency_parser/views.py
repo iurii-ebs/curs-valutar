@@ -1,14 +1,13 @@
-from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.serializers import serialize
+
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .parser import parse_currency as parser
-from ..wallet.models import Currency, RatesHistory, WalletOperations
+from ..wallet.models import Currency, RatesHistory
 from .parser import today
-from ..wallet.serializers import CurrencySerializer, RatesHistorySerializer, CurrentRatesSerializer
+from ..wallet.serializers import CurrencySerializer, CurrentRatesSerializer
 
 
 @api_view(['GET'])
