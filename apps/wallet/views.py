@@ -1,7 +1,8 @@
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.core.exceptions import PermissionDenied
 
 from apps.wallet.models import (Currency,
                                 RatesHistory,
@@ -38,5 +39,39 @@ def wallet_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticatedOrReadOnly])
+@authentication_classes((JWTAuthentication,))
 def wallet_detail(request, pk):
+    pass
+
+
+@api_view(['GET', 'POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((JWTAuthentication,))
+def wallet_operations_list(request):
+    if request.method == 'GET':
+        user = JWTAuthentication().authenticate(request)[0]
+        queryset = Wallet.objects.get(user=user).operationitem.all()
+        serializer = WalletOperationSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        user = JWTAuthentication().authenticate(request)[0]
+        serializer = WalletOperationSerializer(data=request.data)
+        if serializer.is_valid():
+            if user != serializer.validated_data['wallet'].user:
+                raise PermissionDenied
+            wallet_operation_new = WalletOperation.objects.create(
+                wallet=serializer.validated_data['wallet'],
+                rate=serializer.validated_data['rate'],
+                amount=serializer.validated_data['amount']
+            )
+            wallet_operation_new.save()
+            return Response(WalletOperationSerializer(wallet_operation_new).data)
+        return Response(serializer.errors)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+@authentication_classes((JWTAuthentication,))
+def wallet_operations_detail(request, pk):
     pass
