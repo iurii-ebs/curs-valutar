@@ -5,6 +5,8 @@ from apps.wallet.models import (Currency,
                                 Wallet,
                                 WalletOperation)
 
+from apps.users.serializers import UserSerializer
+
 
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,6 +29,8 @@ class CurrentRatesSerializer(serializers.ModelSerializer):
 
 
 class WalletSerializer(serializers.ModelSerializer):
+    user = UserSerializer(required=False)
+
     class Meta:
         model = Wallet
         fields = '__all__'

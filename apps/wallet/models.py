@@ -21,7 +21,7 @@ class RatesHistory(models.Model):
 
     def __str__(self):
         return '{}, Rate: {}, {}'.format(
-            self.currency_id, self.rate, self.date
+            self.currency, self.rate, self.date
         )
 
 
@@ -32,24 +32,23 @@ class Wallet(models.Model):
     currency = models.ForeignKey(
         Currency, related_name='historyitem', on_delete=models.CASCADE
     )
-    total_amount = models.FloatField()
 
     def __str__(self):
-        return 'User: {}'.format(
-            self.user_id
+        return 'User: {}, Currency: {}'.format(
+            self.user, self.currency
         )
 
 
 class WalletOperation(models.Model):
-    wallet_id = models.ForeignKey(
+    wallet = models.ForeignKey(
         Wallet, related_name='operationitem', on_delete=models.CASCADE
     )
-    rate_id = models.ForeignKey(
+    rate = models.ForeignKey(
         RatesHistory, related_name='historyitem', on_delete=models.CASCADE
     )
     amount = models.FloatField()
 
     def __str__(self):
         return '{}, {}, {}'.format(
-            self.wallet_id, self.rate_id, self.amount
+            self.wallet, self.rate, self.amount
         )
