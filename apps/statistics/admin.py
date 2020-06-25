@@ -1,3 +1,4 @@
 from django.contrib import admin
+from apps.statistics.models import RatesPrediction
 
-# Register your models here.
+admin.site.register(RatesPrediction)
