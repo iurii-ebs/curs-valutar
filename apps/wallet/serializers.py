@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from django.db import models
+from django.db.models import Q
+
 from apps.wallet.models import (Currency,
                                 RatesHistory,
                                 Wallet,
@@ -29,6 +30,18 @@ class CurrentRatesSerializer(serializers.ModelSerializer):
 
 
 class WalletSerializer(serializers.ModelSerializer):
+    balance = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Wallet
+        fields = ['id', 'user', 'currency', 'balance']
+
+    def get_balance(self, obj):
+        queryset = Wallet.objects.get(Q(user=obj.user) & Q(id=obj.id)).operationitem.all()
+        return sum([i.amount for i in queryset])
+
+
+class WalletSerializerCreate(serializers.ModelSerializer):
     user = UserSerializer(required=False)
 
     class Meta:
@@ -37,6 +50,14 @@ class WalletSerializer(serializers.ModelSerializer):
 
 
 class WalletOperationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WalletOperation
+        fields = '__all__'
+
+
+class WalletOperationSerializerCreate(serializers.ModelSerializer):
+    wallet = WalletSerializer(required=False)
+
     class Meta:
         model = WalletOperation
         fields = '__all__'
