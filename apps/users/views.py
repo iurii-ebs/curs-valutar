@@ -39,17 +39,6 @@ class RegisterUserView(GenericAPIView):
         return Response(UserSerializer(user).data)
 
 
-"""
-{
-    "first_name": "Artiom",
-    "last_name": "Rotari",
-    "email": "ordersone@gmail.com",
-    "username": "codegod",
-    "password": "qwe123"
-}
-"""
-
-
 @api_view(http_method_names=['POST'])
 @permission_classes([AllowAny])
 def register_user_view(request):
