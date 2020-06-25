@@ -33,6 +33,6 @@ def create_rate_predictions(currency_id, array):
         new_prediction_piece = RatesPrediction.objects.create(
             currency=currency,
             rate=array[x],
-            date=date_today.replace(date_today.year, date_today.month, date_today.day + x)
+            date=date_today.replace(date_today.year, date_today.month, date_today.day + x + 1)
         )
         new_prediction_piece.save()
