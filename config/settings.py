@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
 
-DB_USER = os.getenv('DB_USER')
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-DB_PASSWORD = os.getenv('DB_PASSWORD')
+# Read .env file, parse the contents
+load_dotenv(verbose=DEBUG)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -26,8 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -109,8 +111,8 @@ DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'postgres_db1',
-#         'USER': DB_USER,
-#         'PASSWORD': DB_PASSWORD,
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
 #         'HOST': '127.0.0.1',
 #         'PORT': '5432',
 #     }
