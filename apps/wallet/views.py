@@ -31,12 +31,11 @@ def wallet_list(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        user = JWTAuthentication().authenticate(request)[0]
         serializer = WalletSerializerCreate(data=request.data)
         if serializer.is_valid():
             wallet_new = Wallet.objects.create(
-                user=user,
-                currency=Currency.objects.get(abbr=serializer.validated_data['currency'])
+                user=request.user,
+                currency=serializer.validated_data['currency']
             )
             wallet_new.save()
             return Response(WalletSerializerCreate(wallet_new).data)
@@ -78,7 +77,6 @@ def wallet_transactions(request, pk):
             if user_wallet.currency.id != serializer.validated_data['rate'].id:
                 raise PermissionDenied
             rate_today = RatesHistory.objects.get(Q(currency=serializer.validated_data['rate'].id) & Q(date=datecreated.today()))
-            print(rate_today)
             wallets_transactions_new = WalletOperation.objects.create(
                 wallet=user_wallet,
                 rate=rate_today,
