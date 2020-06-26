@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 class Bank(models.Model):
     registered_name = models.CharField(max_length=50)
+    short_name = models.CharField(max_length=50)
     website = models.CharField(max_length=50, default='')
 
     def __str__(self):
