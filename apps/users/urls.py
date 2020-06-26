@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -13,7 +13,7 @@ activate_pattern = r'activate/(?P<uid_encoded>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Z
 
 urlpatterns = [
     path('register/', register_user_view, name='token_register'),
-    path(activate_pattern, activate_user_view, name='activate_user'),
+    re_path(activate_pattern, activate_user_view, name='activate_user'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
