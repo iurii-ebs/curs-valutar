@@ -2,13 +2,26 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Bank(models.Model):
+    registered_name = models.CharField(max_length=50)
+    website = models.CharField(max_length=50, default='')
+
+    def __str__(self):
+        return '{}'.format(
+            self.registered_name
+        )
+
+
 class Currency(models.Model):
+    bank = models.ForeignKey(
+        Bank, related_name='rateprovider', default=1, blank=True, on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=50)
     abbr = models.CharField(max_length=50)
 
     def __str__(self):
-        return '{}'.format(
-            self.abbr
+        return 'Bank: {}, {}'.format(
+            self.bank, self.abbr
         )
 
 
