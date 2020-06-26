@@ -9,3 +9,4 @@ drf_util==0.0.27
 python-dotenv==0.13.0
 six==1.15.0
 sklearn==0.0.0
+django-notifications-hq==1.6.0
