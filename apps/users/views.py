@@ -21,6 +21,10 @@ class RegisterView(GenericAPIView):
     authentication_classes = ()
 
     @staticmethod
+    def get(request):
+        return Response("Input fields")
+
+    @staticmethod
     def post(request):
         """Register new user and send email for activation"""
         serializer = serializers.UserSerializer(data=request.data)
@@ -121,7 +125,7 @@ class PasswordResetView(GenericAPIView):
                 'user': user,
                 'domain': get_current_site(request).domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': tokens.reset_password_token.make_token(user),
+                'token': tokens.password_reset_token.make_token(user),
             }
         )
 
