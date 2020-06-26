@@ -1,109 +1,179 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.core.mail import EmailMessage
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
+from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 
-from apps.users.serializers import UserSerializer
-from apps.users.tokens import account_activation_token
+from apps.users import serializers
+from apps.users import tokens
 
 
-class RegisterUserView(GenericAPIView):
-    serializer_class = UserSerializer
-
+class RegisterView(GenericAPIView):
+    serializer_class = serializers.UserSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
 
     @staticmethod
     def post(request):
-        serializer = UserSerializer(data=request.data)
+        """Register new user and send email for activation"""
+        serializer = serializers.UserSerializer(data=request.data)
 
-        user = User.objects.create(
-            first_name=serializer.validated_data['first_name'],
-            last_name=serializer.validated_data['last_name'],
-            username=serializer.validated_data['username'],
-            is_superuser=True,
-            is_staff=True
-        )
-        user.set_password(serializer.validated_data['password'])
-        user.save()
+        if serializer.is_valid():
+            user_new = User.objects.create(
+                first_name=serializer.validated_data['first_name'],
+                last_name=serializer.validated_data['last_name'],
+                username=serializer.validated_data['username'],
+                email=serializer.validated_data['email'],
+                is_superuser=False,
+                is_staff=False,
+                is_active=False
+            )
+            user_new.set_password(serializer.validated_data['password'])
+            user_new.save()
 
-        return Response(UserSerializer(user).data)
+            # Compose email
+            email_subject = render_to_string('users/account_activation_email_subject.html')
+            email_message = render_to_string(
+                'users/account_activation_email_body.html',
+                {
+                    'user': user_new,
+                    'domain': get_current_site(request).domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user_new.pk)),
+                    'token': tokens.account_activation_token.make_token(user_new),
+                }
+            )
 
+            # Send email
+            user_new.email_user(
+                subject=email_subject,
+                message=email_message
+            )
 
-@api_view(http_method_names=['POST'])
-@permission_classes([AllowAny])
-def register_user_view(request):
-    serializer = UserSerializer(data=request.data)
+            return Response(
+                {
+                    'user_new': serializers.UserSerializer(user_new).data,
+                    'message': "Please confirm your email address to complete the registration",
+                }
+            )
 
-    if serializer.is_valid():
-        validated_data = serializer.validated_data
-
-        # Register new user
-        user_new = User.objects.create(
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            email=validated_data['email'],
-            username=validated_data['username'],
-            is_superuser=False,
-            is_staff=False,
-            is_active=False
-        )
-        user_new.set_password(validated_data['password'])
-        user_new.save()
-
-        # Compose user activation email
-        activation_address = user_new.email
-        activation_subject = render_to_string('users/account_activation_email_subject.html')
-        activation_message = render_to_string(
-            'users/account_activation_email_body.html',
-            {
-                'user': user_new,
-                'domain': get_current_site(request).domain,
-                'uid': urlsafe_base64_encode(force_bytes(user_new.pk)),
-                'token': account_activation_token.make_token(user_new),
-            }
-        )
-
-        # Send user activation email
-        email = EmailMessage(
-            subject=activation_subject,
-            body=activation_message,
-            to=[activation_address]
-        )
-        email.send()
-
-        return Response(
-            {
-                'user_new': UserSerializer(user_new).data,
-                'message': "Please confirm your email address to complete the registration",
-            }
-        )
-
-    return Response(serializer.errors)
+        return Response(serializer.errors)
 
 
-@api_view(http_method_names=['GET'])
-@permission_classes([AllowAny])
-def activate_user_view(request, uid_encoded, token):
-    try:
-        uid = force_text(urlsafe_base64_decode(uid_encoded))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
+class ActivateView(GenericAPIView):
+    permission_classes = [AllowAny]
 
-    if user is not None and account_activation_token.check_token(user, token):
+    @staticmethod
+    def get(request, uid_encoded, token):
+        # Check if link is valid
+        try:
+            uid = force_text(urlsafe_base64_decode(uid_encoded))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        # Check if requested user exists and activation token is valid
+        if user is None and tokens.account_activation_token.check_token(user, token):
+            return Response(status.HTTP_404_NOT_FOUND)
+
+        # Activate user
         user.is_active = True
         user.save()
 
-        return Response('Thank you for your email confirmation. Now you can login your account.')
-    else:
-        return Response('Activation link is invalid!')
+        return Response({
+            'user': serializers.UserSerializer(user).data,
+            'message': 'User activated'
+        })
+
+
+class PasswordResetView(GenericAPIView):
+    serializer_class = serializers.PasswordResetSerializer
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request):
+        return Response("Input email")
+
+    @staticmethod
+    def post(request):
+        """Generate password reset link and send email"""
+        serializer = serializers.PasswordResetSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors)
+
+        user = User.objects.filter(email=serializer.validated_data['email']).first()
+
+        if user is None:
+            return Response("User does not exist")
+
+        # Compose email
+        email_subject = render_to_string('users/account_reset_password_email_subject.html')
+        email_message = render_to_string(
+            'users/account_reset_password_email_body.html',
+            {
+                'user': user,
+                'domain': get_current_site(request).domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': tokens.reset_password_token.make_token(user),
+            }
+        )
+
+        # Send email
+        user.email_user(
+            subject=email_subject,
+            message=email_message
+        )
+
+        return Response('We send reset link to email')
+
+
+class PasswordChangeView(GenericAPIView):
+    serializer_class = serializers.PasswordChangeSerializer
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request, uid_encoded, token):
+        # Check if link is valid
+        try:
+            uid = force_text(urlsafe_base64_decode(uid_encoded))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is None and tokens.account_activation_token.check_token(user, token):
+            return Response(status.HTTP_404_NOT_FOUND)
+
+        return Response("Input passwords")
+
+    @staticmethod
+    def post(request, uid_encoded, token):
+        # Check if link is valid
+        try:
+            uid = force_text(urlsafe_base64_decode(uid_encoded))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is None and tokens.password_reset_token.check_token(user, token):
+            return Response(status.HTTP_404_NOT_FOUND)
+
+        # Check if request data is valid
+        serializer = serializers.PasswordChangeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors)
+
+        # Change password
+        user.set_password(serializer.validated_data['password1'])
+        user.save()
+
+        return Response({
+            'user': serializers.UserSerializer(user).data,
+            'message': 'Password changed'
+        })
