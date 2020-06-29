@@ -10,6 +10,4 @@ class RatesPrediction(models.Model):
     date = models.DateField()
 
     def __str__(self):
-        return '{}, Rate: {}, {}'.format(
-            self.currency, self.rate, self.date
-        )
+        return f'{self.currency}, Rate: {self.rate}, {self.date}'
