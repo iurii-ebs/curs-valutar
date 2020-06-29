@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.currency_parser',
     'apps.wallet',
+    'apps.statistics',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
