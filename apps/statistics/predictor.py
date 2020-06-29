@@ -1,5 +1,5 @@
 from sklearn.linear_model import LinearRegression
-from datetime import date as datecreated
+import datetime
 
 from apps.wallet.models import Currency
 
@@ -29,15 +29,13 @@ def predict_function(currency_id, rates_sequence, days, future_days=0):
 
 
 def create_rate_predictions(currency_id, rates_future):
-    date_today = datecreated.today()
     currency = Currency.objects.get(id=currency_id)
     for x in range(len(rates_future)):
-        new_prediction_piece = RatesPrediction.objects.create(
+        RatesPrediction.objects.create(
             currency=currency,
             rate=rates_future[x],
-            date=date_today.replace(date_today.year, date_today.month, date_today.day + x + 1)
+            date=datetime.date.today() + datetime.timedelta(x + 1)
         )
-        new_prediction_piece.save()
 
 
 def analyst_agent(currency_id, rates_past_future, days_predicted):
