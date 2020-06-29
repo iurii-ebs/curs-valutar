@@ -20,16 +20,30 @@ from apps.users import tokens
 
 class RegisterView(GenericAPIView):
     serializer_class = serializers.UserSerializer
-    permission_classes = (AllowAny,)
-    authentication_classes = ()
+    permission_classes = [AllowAny]
 
     @staticmethod
     def get(request):
+        """
+        @api {get} /users/register/ Request registration page
+        @apiName RegisterView
+        @apiGroup Users
+        """
         return Response("Page: Registration page")
 
     @staticmethod
     def post(request):
-        """Register new user and send email for activation"""
+        """
+        @api {post} /users/register/ Request user registration
+        @apiName RegisterView
+        @apiGroup Users
+        @apiParam {String} first_name User's first_name.
+        @apiParam {String} last_name User's last_name.
+        @apiParam {String} email User's email.
+        @apiParam {String} username User's username.
+        @apiParam {String} password User's password.
+        @apiSuccess redirect to /users/register-done/
+        """
         serializer = serializers.UserSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -66,6 +80,11 @@ class ActivateView(GenericAPIView):
 
     @staticmethod
     def get(request, uid_encoded, token):
+        """
+        @api {get} /users/activate/encoded_uid/token Request user activation
+        @apiName ActivateView
+        @apiGroup Users
+        """
         # Check if link is valid
         try:
             uid = force_text(urlsafe_base64_decode(uid_encoded))
@@ -91,11 +110,21 @@ class PasswordResetView(GenericAPIView):
 
     @staticmethod
     def get(request):
+        """
+        @api {get} /users/password-reset/ Request password reset
+        @apiName PasswordResetView
+        @apiGroup Users
+        """
         return Response("Page: Reset password page")
 
     @staticmethod
     def post(request):
-        """Generate password reset link and send email"""
+        """
+        @api {post} /users/password-reset/ Confirm password reset
+        @apiName PasswordResetView
+        @apiGroup Users
+        @apiParam {String} email User's email.
+        """
         serializer = serializers.PasswordResetSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -131,6 +160,11 @@ class PasswordChangeView(GenericAPIView):
 
     @staticmethod
     def get(request, uid_encoded, token):
+        """
+        @api {get} /users/password-change/uid_encoded/token Request password change page
+        @apiName PasswordChangeView
+        @apiGroup Users
+        """
         # Check if link is valid
         try:
             uid = force_text(urlsafe_base64_decode(uid_encoded))
@@ -142,10 +176,17 @@ class PasswordChangeView(GenericAPIView):
         if user is None or not tokens.account_activation_token.check_token(user, token):
             return Response(status.HTTP_404_NOT_FOUND)
 
-        return Response("Input passwords")
+        return Response("Page: password change page")
 
     @staticmethod
     def post(request, uid_encoded, token):
+        """
+        @api {post} /users/password-change/uid_encoded/token Request password change page
+        @apiName PasswordChangeView
+        @apiGroup Users
+        @apiParam {String} password1 User's new password.
+        @apiParam {String} password2 User's new password confirm.
+        """
         # Check if link is valid
         try:
             uid = force_text(urlsafe_base64_decode(uid_encoded))
@@ -177,6 +218,11 @@ class RegisterDoneView(GenericAPIView):
 
     @staticmethod
     def get(request):
+        """
+        @api {get} /users/register-done/ Request register-done page
+        @apiName RegisterDoneView
+        @apiGroup Users
+        """
         return Response("Page: Account is successfully registered. Please follow email link for activation.")
 
 
@@ -185,6 +231,11 @@ class ActivateDoneView(GenericAPIView):
 
     @staticmethod
     def get(request):
+        """
+        @api {get} /users/activate-done/ Request activate-done page
+        @apiName ActivateDoneView
+        @apiGroup Users
+        """
         return Response("Page: Account is successfully activated.")
 
 
@@ -193,6 +244,11 @@ class PasswordResetDoneView(GenericAPIView):
 
     @staticmethod
     def get(request):
+        """
+        @api {get} /users/password-reset-done/ Request password-reset-done page
+        @apiName PasswordResetDoneView
+        @apiGroup Users
+        """
         return Response("Page: Password reset link is send to your email.")
 
 
@@ -201,4 +257,9 @@ class PasswordChangeDoneView(GenericAPIView):
 
     @staticmethod
     def get(request):
+        """
+        @api {get} /users/password-change-done/ Request password-change-done page
+        @apiName PasswordChangeDoneView
+        @apiGroup Users
+        """
         return Response("Page: Password successfully changed.")
