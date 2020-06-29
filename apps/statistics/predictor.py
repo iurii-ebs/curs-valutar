@@ -4,6 +4,9 @@ import datetime
 from apps.wallet.models import Currency
 
 from apps.statistics.models import RatesPrediction
+from django.contrib.auth.models import User
+from apps.wallet.models import Wallet
+from notifications.signals import notify
 
 
 def predict_function(currency_id, rates_sequence, days, future_days=0):
@@ -48,5 +51,8 @@ def analyst_agent(currency_id, rates_past_future, days_predicted):
 
 
 def notification_agent(currency, expected_rate_growth, percentage_growth, days_predicted, rate_today, rate_end):
-    notification_all = f'{currency.name} from {currency.bank} is expected to {"fall" if percentage_growth < 0 else "rise"} by {abs(expected_rate_growth):.2f}¢ ({percentage_growth:.2f}% {"DOWN" if percentage_growth < 0 else "UP"}), for the next {days_predicted} days from {rate_today:.3f} to {rate_end:.3f}'
-    print(notification_all)
+    notification_verb = f'{currency.name} from {currency.bank} is expected to {"fall" if percentage_growth < 0 else "rise"} by {abs(expected_rate_growth):.2f}¢ ({percentage_growth:.2f}% {"DOWN" if percentage_growth < 0 else "UP"}), for the next {days_predicted} days from {rate_today:.3f} to {rate_end:.3f}'
+    wallets = Wallet.objects.all()
+    for wallet in wallets:
+        if wallet.currency.id == currency.id:
+            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb)
