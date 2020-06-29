@@ -1,19 +1,17 @@
 from django.urls import path, re_path
+from rest_framework_simplejwt import views as jwt_views
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-
-from apps.users.views import RegisterUserView, register_user_view, activate_user_view
+from apps.users import views
 
 
-activate_pattern = r'activate/(?P<uid_encoded>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/'
-
+re_uid = r'(?P<uid_encoded>[0-9A-Za-z_\-]+)/'
+re_token = r'(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/'
 
 urlpatterns = [
-    path('register/', register_user_view, name='token_register'),
-    re_path(activate_pattern, activate_user_view, name='activate_user'),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    re_path(r'register/', views.RegisterView.as_view(), name='token_register'),
+    re_path(r'activate/' + re_uid + re_token, views.ActivateView.as_view(), name='activate_user'),
+    re_path(r'token_obtain/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain'),
+    re_path(r'token_refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    re_path(r'password_reset/', views.PasswordResetView.as_view(), name='password_reset'),
+    re_path(r'password_change/' + re_uid + re_token, views.PasswordChangeView.as_view(), name='reset_password'),
 ]
