@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.shortcuts import redirect
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.models import User
@@ -15,6 +16,8 @@ from apps.users import serializers
 from apps.users import tokens
 
 
+# Main views
+
 class RegisterView(GenericAPIView):
     serializer_class = serializers.UserSerializer
     permission_classes = (AllowAny,)
@@ -22,52 +25,39 @@ class RegisterView(GenericAPIView):
 
     @staticmethod
     def get(request):
-        return Response("Input fields")
+        return Response("Page: Register user")
 
     @staticmethod
     def post(request):
         """Register new user and send email for activation"""
         serializer = serializers.UserSerializer(data=request.data)
 
-        if serializer.is_valid():
-            user_new = User.objects.create(
-                first_name=serializer.validated_data['first_name'],
-                last_name=serializer.validated_data['last_name'],
-                username=serializer.validated_data['username'],
-                email=serializer.validated_data['email'],
-                is_superuser=False,
-                is_staff=False,
-                is_active=False
-            )
-            user_new.set_password(serializer.validated_data['password'])
-            user_new.save()
+        if not serializer.is_valid():
+            return Response(serializer.errors)
 
-            # Compose email
-            email_subject = render_to_string('users/account_activation_email_subject.html')
-            email_message = render_to_string(
-                'users/account_activation_email_body.html',
-                {
-                    'user': user_new,
-                    'domain': get_current_site(request).domain,
-                    'uid': urlsafe_base64_encode(force_bytes(user_new.pk)),
-                    'token': tokens.account_activation_token.make_token(user_new),
-                }
-            )
+        user_new = User.objects.create(**serializer.validated_data)
+        user_new.set_password(serializer.validated_data['password'])
+        user_new.save()
 
-            # Send email
-            user_new.email_user(
-                subject=email_subject,
-                message=email_message
-            )
+        # Compose email
+        email_subject = render_to_string('users/account_activation_email_subject.html')
+        email_message = render_to_string(
+            'users/account_activation_email_body.html',
+            {
+                'user': user_new,
+                'domain': get_current_site(request).domain,
+                'uid': urlsafe_base64_encode(force_bytes(user_new.pk)),
+                'token': tokens.account_activation_token.make_token(user_new),
+            }
+        )
 
-            return Response(
-                {
-                    'user_new': serializers.UserSerializer(user_new).data,
-                    'message': "Please confirm your email address to complete the registration",
-                }
-            )
+        # Send email
+        user_new.email_user(
+            subject=email_subject,
+            message=email_message
+        )
 
-        return Response(serializer.errors)
+        return redirect('user_register_done')
 
 
 class ActivateView(GenericAPIView):
@@ -78,22 +68,20 @@ class ActivateView(GenericAPIView):
         # Check if link is valid
         try:
             uid = force_text(urlsafe_base64_decode(uid_encoded))
-            user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
+        except(TypeError, ValueError, OverflowError):
+            return Response(status.HTTP_404_NOT_FOUND)
+
+        user = User.objects.filter(pk=uid).first()
 
         # Check if requested user exists and activation token is valid
-        if user is None and tokens.account_activation_token.check_token(user, token):
+        if user is None or not tokens.account_activation_token.check_token(user, token):
             return Response(status.HTTP_404_NOT_FOUND)
 
         # Activate user
         user.is_active = True
         user.save()
 
-        return Response({
-            'user': serializers.UserSerializer(user).data,
-            'message': 'User activated'
-        })
+        return redirect('user_activate_done')
 
 
 class PasswordResetView(GenericAPIView):
@@ -114,28 +102,26 @@ class PasswordResetView(GenericAPIView):
 
         user = User.objects.filter(email=serializer.validated_data['email']).first()
 
-        if user is None:
-            return Response("User does not exist")
+        if user is not None:
+            # Compose email
+            email_subject = render_to_string('users/account_reset_password_email_subject.html')
+            email_message = render_to_string(
+                'users/account_reset_password_email_body.html',
+                {
+                    'user': user,
+                    'domain': get_current_site(request).domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': tokens.password_reset_token.make_token(user),
+                }
+            )
 
-        # Compose email
-        email_subject = render_to_string('users/account_reset_password_email_subject.html')
-        email_message = render_to_string(
-            'users/account_reset_password_email_body.html',
-            {
-                'user': user,
-                'domain': get_current_site(request).domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': tokens.password_reset_token.make_token(user),
-            }
-        )
+            # Send email
+            user.email_user(
+                subject=email_subject,
+                message=email_message
+            )
 
-        # Send email
-        user.email_user(
-            subject=email_subject,
-            message=email_message
-        )
-
-        return Response('We send reset link to email')
+        return redirect('password_reset_done')
 
 
 class PasswordChangeView(GenericAPIView):
@@ -147,11 +133,12 @@ class PasswordChangeView(GenericAPIView):
         # Check if link is valid
         try:
             uid = force_text(urlsafe_base64_decode(uid_encoded))
-            user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
+        except(TypeError, ValueError, OverflowError):
+            return Response(status.HTTP_404_NOT_FOUND)
 
-        if user is None and tokens.account_activation_token.check_token(user, token):
+        user = User.objects.filter(pk=uid).first()
+
+        if user is None or not tokens.account_activation_token.check_token(user, token):
             return Response(status.HTTP_404_NOT_FOUND)
 
         return Response("Input passwords")
@@ -161,15 +148,17 @@ class PasswordChangeView(GenericAPIView):
         # Check if link is valid
         try:
             uid = force_text(urlsafe_base64_decode(uid_encoded))
-            user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
+        except(TypeError, ValueError, OverflowError):
+            return Response(status.HTTP_404_NOT_FOUND)
 
-        if user is None and tokens.password_reset_token.check_token(user, token):
+        user = User.objects.filter(pk=uid).first()
+
+        if user is None or not tokens.account_activation_token.check_token(user, token):
             return Response(status.HTTP_404_NOT_FOUND)
 
         # Check if request data is valid
         serializer = serializers.PasswordChangeSerializer(data=request.data)
+
         if not serializer.is_valid():
             return Response(serializer.errors)
 
@@ -177,7 +166,38 @@ class PasswordChangeView(GenericAPIView):
         user.set_password(serializer.validated_data['password1'])
         user.save()
 
-        return Response({
-            'user': serializers.UserSerializer(user).data,
-            'message': 'Password changed'
-        })
+        return redirect('password_change_done')
+
+
+# Redirect views
+
+class RegisterDoneView(GenericAPIView):
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request):
+        return Response("Page: Account is successfully registered. Please follow email link for activation.")
+
+
+class ActivateDoneView(GenericAPIView):
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request):
+        return Response("Page: Account is successfully activated.")
+
+
+class PasswordResetDoneView(GenericAPIView):
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request):
+        return Response("Page: Password reset link is send to your email.")
+
+
+class PasswordChangeDoneView(GenericAPIView):
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request):
+        return Response("Page: Password successfully changed.")
