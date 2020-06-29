@@ -25,7 +25,7 @@ class RegisterView(GenericAPIView):
 
     @staticmethod
     def get(request):
-        return Response("Page: Register user")
+        return Response("Page: Registration page")
 
     @staticmethod
     def post(request):
@@ -35,7 +35,8 @@ class RegisterView(GenericAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors)
 
-        user_new = User.objects.create(**serializer.validated_data)
+        # Create new user
+        user_new = User.objects.create(is_active=False, **serializer.validated_data)
         user_new.set_password(serializer.validated_data['password'])
         user_new.save()
 
@@ -90,7 +91,7 @@ class PasswordResetView(GenericAPIView):
 
     @staticmethod
     def get(request):
-        return Response("Input email")
+        return Response("Page: Reset password page")
 
     @staticmethod
     def post(request):
