@@ -50,9 +50,11 @@ INSTALLED_APPS = [
 
     # Local
     'apps.users',
+    'apps.banks',
     'apps.currency_parser',
     'apps.wallet',
     'apps.statistics',
+
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
