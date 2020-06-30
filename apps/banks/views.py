@@ -5,11 +5,55 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from apps.wallet.models import Bank as BankModel
-from apps.wallet.models import RatesHistory as RateModel
+from apps.wallet.models import (
+    Bank as BankModel,
+    RatesHistory as RateModel,
+    Currency as CoinModel,
+)
+
+from apps.wallet.serializers import RatesHistorySerializer
 
 import json
 import requests
+
+
+def get_or_create(model, **kwargs):
+    # Return instance from model or create it if doesn't exist
+    try:
+        obj = model.objects.get(**kwargs)
+    except model.DoesNotExist:
+        obj = model(**kwargs)
+        obj.save()
+
+    return obj
+
+
+def map_item_to_models(item):
+    # Get or create Bank instance
+    bank_kwargs = {
+        'registered_name': item['bank']['name'],
+        'short_name': item['bank']['short_name'],
+    }
+    bank = get_or_create(BankModel, **bank_kwargs)
+
+    # Get or create Currency instance
+    coin_kwargs = {
+        'name': item['currency']['name'],
+        'abbr': item['currency']['abbr'],
+        'bank': bank,
+    }
+    coin = get_or_create(CoinModel, **coin_kwargs)
+
+    # Get or create RatesHistory instance
+    rate_kwargs = {
+        'currency': coin,
+        'rate_sell': item['rate_sell'],
+        'rate_buy': item['rate_buy'],
+        'date': item['date'],
+    }
+    rate = get_or_create(RateModel, **rate_kwargs)
+
+    return rate
 
 
 class LoadRatesView(GenericAPIView):
@@ -32,25 +76,32 @@ class LoadRatesView(GenericAPIView):
         if not len(data):
             return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        for item in data:
-            pass
+        # For each entry in data create models
+        try:
+            rates = [map_item_to_models(item) for item in data]
+        except (KeyError,):
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(f'{len(data)}')
+        return Response(RatesHistorySerializer(rates, many=True).data)
 
 
 # TODO: Remove me
 """
-{
-    "currency": {
-        "name": "US Dollar",
-        "abbr": "USD"
+Parser response example
+[
+    {
+        "currency": {
+            "name": "US Dollar",
+            "abbr": "USD"
+        },
+        "bank": {
+            "name": "Moldova Agroindbank",
+            "short_name": "MAIB"
+        },
+        "rate_sell": 17.02,
+        "rate_buy": 17.28,
+        "date": "2020-06-30"
     },
-    "bank": {
-        "name": "Moldova Agroindbank",
-        "short_name": "MAIB"
-    },
-    "rate_sell": 17.02,
-    "rate_buy": 17.28,
-    "date": "2020-06-30"
-},
+    ...
+]
 """
