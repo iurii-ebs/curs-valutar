@@ -4,7 +4,6 @@ import datetime
 from apps.wallet.models import Currency
 
 from apps.statistics.models import RatesPrediction
-from django.contrib.auth.models import User
 from apps.wallet.models import Wallet
 from notifications.signals import notify
 
@@ -36,7 +35,7 @@ def create_rate_predictions(currency_id, rates_future):
     for x in range(len(rates_future)):
         RatesPrediction.objects.create(
             currency=currency,
-            rate=rates_future[x],
+            rate_sell=rates_future[x],
             date=datetime.date.today() + datetime.timedelta(x + 1)
         )
 

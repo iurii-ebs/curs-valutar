@@ -64,10 +64,11 @@ class WalletTransactionsView(generics.GenericAPIView):
         queryset = Wallet.objects.get(id=pk)
         serializer = WalletOperationSerializerCreate(data=request.data)
         if serializer.is_valid():
-            rate_today = RatesHistory.objects.get(currency=serializer.validated_data['rate'].id,
-                                                  date=datetime.date.today())
+            rate_today = RatesHistory.objects.filter(currency=serializer.validated_data['currency'].id,
+                                                     date=datetime.date.today()).latest('id')
             wallets_transactions_new = WalletOperation.objects.create(
                 wallet=queryset,
+                currency=serializer.validated_data['currency'],
                 rate=rate_today,
                 amount=serializer.validated_data['amount']
             )

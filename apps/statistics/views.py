@@ -41,9 +41,9 @@ class PredictionDaysDetailView(GenericAPIView):
 
     def post(self, request, pk):
         RatesPrediction.objects.all().delete()
-        currency_items = [x.id for x in Currency.objects.all()]
+        currency_items = [currency_item.id for currency_item in Currency.objects.all()]
         for currency_id in currency_items:
-            past_rates = [x.rate for x in RatesHistory.objects.filter(currency=currency_id).order_by('date')]
+            past_rates = [past_rate.rate_sell for past_rate in RatesHistory.objects.filter(currency=currency_id).order_by('date')]
             predict_function(currency_id, past_rates, pk)
 
         return Response(status=status.HTTP_201_CREATED)
