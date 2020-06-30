@@ -61,6 +61,16 @@ class WalletTransactionsView(generics.GenericAPIView):
         return Response(serializer.data)
 
     def post(self, request, pk):
+        """
+        @api {get} /wallets/:id/transactions/ Post Wallets Transactions
+        @apiName PostTransactions
+        @apiGroup Wallets
+
+        @apiParam {Number} id Wallet unique ID.
+
+        @apiSuccess {Number} amount Transaction amount (can be negative).
+        @apiSuccess {Number} currency  Currency id to transfer.
+        """
         queryset = Wallet.objects.get(id=pk)
         serializer = WalletOperationSerializerCreate(data=request.data)
         if serializer.is_valid():
