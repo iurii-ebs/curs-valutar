@@ -1,8 +1,6 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
-from rest_framework.request import Request
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
 from apps.wallet.models import (
@@ -28,8 +26,7 @@ def get_or_create(model, **kwargs):
     return obj
 
 
-def map_item_to_models(item):
-    # Create model instances based on parser result item
+def create_instances(item):
     # Get or create Bank instance
     bank_kwargs = {
         'registered_name': item['bank']['name'],
@@ -58,8 +55,11 @@ def map_item_to_models(item):
 
 
 class LoadRatesView(GenericAPIView):
+    serializer_class = RatesHistorySerializer
+
     # TODO: Add permission only if user is autenticated as admin
     permission_classes = [AllowAny]
+    # Permission_classes = [IsAdminUser]
 
     @staticmethod
     def get(request):
@@ -68,41 +68,13 @@ class LoadRatesView(GenericAPIView):
 
         # Check response status code
         if response.status_code != 200:
-            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        # Parse json
-        data = json.loads(response.text)
-
-        # Check data length
-        if not len(data):
-            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response()
 
         # For each entry in data create models
         try:
-            rates = [map_item_to_models(item) for item in data]
+            for item in json.loads(response.text):
+                create_instances(item)
         except (KeyError,):
             return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(RatesHistorySerializer(rates, many=True).data)
-
-
-# TODO: Remove me
-"""
-Parser response example
-[
-    {
-        "currency": {
-            "name": "US Dollar",
-            "abbr": "USD"
-        },
-        "bank": {
-            "name": "Moldova Agroindbank",
-            "short_name": "MAIB"
-        },
-        "rate_sell": 17.02,
-        "rate_buy": 17.28,
-        "date": "2020-06-30"
-    },
-    ...
-]
-"""
+        return Response(status.HTTP_200_OK)
