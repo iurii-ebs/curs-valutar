@@ -8,9 +8,7 @@ class Bank(models.Model):
     website = models.CharField(max_length=50, default='')
 
     def __str__(self):
-        return '{}'.format(
-            self.registered_name
-        )
+        return f'{self.registered_name}'
 
 
 class Currency(models.Model):
@@ -21,22 +19,19 @@ class Currency(models.Model):
     abbr = models.CharField(max_length=50)
 
     def __str__(self):
-        return 'Bank: {}, {}'.format(
-            self.bank, self.abbr
-        )
+        return f'Bank: {self.bank}, {self.abbr}'
 
 
 class RatesHistory(models.Model):
     currency = models.ForeignKey(
         Currency, related_name='currencyitem', on_delete=models.CASCADE
     )
-    rate = models.FloatField()
+    rate_sell = models.FloatField()
+    rate_buy = models.FloatField()
     date = models.DateField(db_index=True, auto_now_add=True)
 
     def __str__(self):
-        return '{}, Rate: {}, {}'.format(
-            self.currency, self.rate, self.date
-        )
+        return f'{self.currency}, Rate Sell: {self.rate_sell} / Rate Buy: {self.rate_buy}, {self.date}'
 
 
 class Wallet(models.Model):
@@ -48,14 +43,15 @@ class Wallet(models.Model):
     )
 
     def __str__(self):
-        return 'User: {}, Currency: {}'.format(
-            self.user, self.currency
-        )
+        return f'User: {self.user}, Currency: {self.currency}'
 
 
 class WalletOperation(models.Model):
     wallet = models.ForeignKey(
         Wallet, related_name='operationitem', on_delete=models.CASCADE
+    )
+    currency = models.ForeignKey(
+        Currency, related_name='currencyoperation', on_delete=models.CASCADE
     )
     rate = models.ForeignKey(
         RatesHistory, related_name='historyitem', on_delete=models.CASCADE
@@ -63,6 +59,4 @@ class WalletOperation(models.Model):
     amount = models.FloatField()
 
     def __str__(self):
-        return '{}, {}, {}'.format(
-            self.wallet, self.rate, self.amount
-        )
+        return f'User: {self.wallet.user} | {self.wallet.currency} | Operation currency: {self.currency} | Price: {self.rate.rate_buy} | {self.amount}'
