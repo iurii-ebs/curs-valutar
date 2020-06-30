@@ -1,9 +1,11 @@
 from sklearn.linear_model import LinearRegression
-from datetime import date as datecreated
+import datetime
 
 from apps.wallet.models import Currency
 
 from apps.statistics.models import RatesPrediction
+from apps.wallet.models import Wallet
+from notifications.signals import notify
 
 
 def predict_function(currency_id, rates_sequence, days, future_days=0):
@@ -29,15 +31,13 @@ def predict_function(currency_id, rates_sequence, days, future_days=0):
 
 
 def create_rate_predictions(currency_id, rates_future):
-    date_today = datecreated.today()
     currency = Currency.objects.get(id=currency_id)
     for x in range(len(rates_future)):
-        new_prediction_piece = RatesPrediction.objects.create(
+        RatesPrediction.objects.create(
             currency=currency,
-            rate=rates_future[x],
-            date=date_today.replace(date_today.year, date_today.month, date_today.day + x + 1)
+            rate_sell=rates_future[x],
+            date=datetime.date.today() + datetime.timedelta(x + 1)
         )
-        new_prediction_piece.save()
 
 
 def analyst_agent(currency_id, rates_past_future, days_predicted):
@@ -50,5 +50,8 @@ def analyst_agent(currency_id, rates_past_future, days_predicted):
 
 
 def notification_agent(currency, expected_rate_growth, percentage_growth, days_predicted, rate_today, rate_end):
-    notification_all = f'{currency.name} from {currency.bank} is expected to {"fall" if percentage_growth < 0 else "rise"} by {abs(expected_rate_growth):.2f}¢ ({percentage_growth:.2f}% {"DOWN" if percentage_growth < 0 else "UP"}), for the next {days_predicted} days from {rate_today:.3f} to {rate_end:.3f}'
-    print(notification_all)
+    notification_verb = f'{currency.name} from {currency.bank} is expected to {"fall" if percentage_growth < 0 else "rise"} by {abs(expected_rate_growth):.2f}¢ ({percentage_growth:.2f}% {"DOWN" if percentage_growth < 0 else "UP"}), for the next {days_predicted} days from {rate_today:.3f} to {rate_end:.3f}'
+    wallets = Wallet.objects.all()
+    for wallet in wallets:
+        if wallet.currency.id == currency.id:
+            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb)
