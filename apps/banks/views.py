@@ -29,6 +29,7 @@ def get_or_create(model, **kwargs):
 
 
 def map_item_to_models(item):
+    # Create model instances based on parser result item
     # Get or create Bank instance
     bank_kwargs = {
         'registered_name': item['bank']['name'],
