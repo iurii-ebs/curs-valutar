@@ -1,3 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
+from apps.wallet.models import Bank
+from apps.wallet.models import RatesHistory as Rate
+from apps.wallet.models import Currency as Coin
 
-# Create your models here.
+
+class Load(models.Model):
+    date = models.DateField(blank=True)

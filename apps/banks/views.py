@@ -1,80 +1,119 @@
-from rest_framework import status
-from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny, IsAdminUser
+from django.conf import settings
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
-from apps.wallet.models import (
-    Bank as BankModel,
-    RatesHistory as RateModel,
-    Currency as CoinModel,
-)
-
-from apps.wallet.serializers import RatesHistorySerializer
+from .models import Bank, Coin, Rate, Load
+from .serializers import BankSerializer, CoinSerializer, RateSerializer, LoadSerializer
+from .permissions import IsStaffOrReadOnly
 
 import json
 import requests
+from datetime import datetime, timedelta
 
 
 def get_or_create(model, **kwargs):
-    # Return instance from model or create it if doesn't exist
+    """Try to get instance from specified model or create them if it doesn't exist."""
     try:
         obj = model.objects.get(**kwargs)
     except model.DoesNotExist:
-        obj = model(**kwargs)
-        obj.save()
+        obj = model.objects.create(**kwargs)
 
     return obj
 
 
-def create_instances(item):
-    # Get or create Bank instance
-    bank_kwargs = {
-        'registered_name': item['bank']['name'],
-        'short_name': item['bank']['short_name'],
-    }
-    bank = get_or_create(BankModel, **bank_kwargs)
+def load_item(item):
+    """Create (if doesn't exist) bank, coin and rate from json entry."""
+    try:
+        bank = get_or_create(
+            Bank,
+            registered_name=item['bank']['name'],
+            short_name=item['bank']['short_name'],
+        )
 
-    # Get or create Currency instance
-    coin_kwargs = {
-        'name': item['currency']['name'],
-        'abbr': item['currency']['abbr'],
-        'bank': bank,
-    }
-    coin = get_or_create(CoinModel, **coin_kwargs)
+        coin = get_or_create(
+            Coin,
+            name=item['currency']['name'],
+            abbr=item['currency']['abbr'],
+            bank=bank,
+        )
 
-    # Get or create RatesHistory instance
-    rate_kwargs = {
-        'currency': coin,
-        'rate_sell': item['rate_sell'],
-        'rate_buy': item['rate_buy'],
-        'date': item['date'],
-    }
-    rate = get_or_create(RateModel, **rate_kwargs)
+        rate = get_or_create(
+            Rate,
+            currency=coin,
+            rate_sell=item['rate_sell'],
+            rate_buy=item['rate_buy'],
+            date=item['date'],
+        )
+    except KeyError:
+        return False
 
-    return rate
+    return True
 
 
-class LoadRatesView(GenericAPIView):
-    serializer_class = RatesHistorySerializer
+def load_item_list(url):
+    """Request rates as json and add instances to db"""
+    response = requests.get(url)
 
-    # TODO: Add permission only if user is autenticated as admin
-    permission_classes = [AllowAny]
-    # Permission_classes = [IsAdminUser]
+    if response.status_code != status.HTTP_200_OK:
+        return Response(status.HTTP_500_INTERNAL_SERVER_ERROR, "Bad request")
 
-    @staticmethod
-    def get(request):
-        # Request data from parser
-        response = requests.get('http://127.0.0.2:8000/banks/get/all/')
+    for item in json.loads(response.text):
+        if not load_item(item):
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR, "Bad json")
 
-        # Check response status code
-        if response.status_code != 200:
-            return Response()
+    return Response(status.HTTP_200_OK)
 
-        # For each entry in data create models
-        try:
-            for item in json.loads(response.text):
-                create_instances(item)
-        except (KeyError,):
-            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(status.HTTP_200_OK)
+class LoadViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Load.objects.all()
+    serializer_class = LoadSerializer
+    permission_classes = [IsAdminUser]
+
+    def create(self, request):
+        # TODO: Когда Макс доделает парсер, добавить в URL дату
+        self.get_serializer()
+
+        url = settings.BANKS_PARSER['BANKS_ALL'].format(
+            host=settings.BANKS_PARSER['HOST']
+        )
+        return load_item_list(url)
+
+
+class BankViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Bank.objects.all()
+    serializer_class = BankSerializer
+    permission_classes = [IsStaffOrReadOnly]
+
+    @action(detail=True)
+    def list_coins(self, request, pk):
+        coins = Coin.objects.filter(bank=self.get_object())
+        return Response(CoinSerializer(coins, many=True).data)
+
+
+class CoinViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Coin.objects.all()
+    serializer_class = CoinSerializer
+    permission_classes = [IsStaffOrReadOnly]
+
+    @action(detail=True)
+    def list_rates(self, request, pk):
+        rates = Rate.objects.filter(currency=self.get_object())
+        return Response(RateSerializer(rates, many=True).data)
+
+    @action(detail=True)
+    def list_rates_from(self, request, pk, days=7):
+        date_to = datetime.today()
+        date_from = date_to - timedelta(days=days)
+        rates = Rate.objects.filter(
+            currency=self.get_object(),
+            date__range=[date_from, date_to]
+        )
+        return Response(RateSerializer(rates, many=True).data)
+
+
+class RateViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Rate.objects.all()
+    serializer_class = RateSerializer
+    permission_classes = [IsStaffOrReadOnly]
