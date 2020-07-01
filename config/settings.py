@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'apps.wallet',
     'apps.users',
     'apps.banks',
-    'apps.currency_parser',
     'apps.statistics',
 
 ]
