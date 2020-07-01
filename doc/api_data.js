@@ -4,97 +4,67 @@ define({ "api": [
     "url": "/users/activate-done/",
     "title": "Request activate-done page",
     "name": "ActivateDoneView",
-    "group": "Users",
+    "group": "UserActivation",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserActivation"
   },
   {
     "type": "get",
     "url": "/users/activate/encoded_uid/token",
     "title": "Request user activation",
     "name": "ActivateView",
-    "group": "Users",
+    "group": "UserActivation",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserActivation"
   },
   {
     "type": "get",
     "url": "/users/password-change-done/",
     "title": "Request password-change-done page",
     "name": "PasswordChangeDoneView",
-    "group": "Users",
+    "group": "UserPasswordChange",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserPasswordChange"
   },
   {
     "type": "get",
     "url": "/users/password-change/uid_encoded/token",
     "title": "Request password change page",
     "name": "PasswordChangeView",
-    "group": "Users",
+    "group": "UserPasswordChange",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
-  },
-  {
-    "type": "post",
-    "url": "/users/password-change/uid_encoded/token",
-    "title": "Request password change page",
-    "name": "PasswordChangeView",
-    "group": "Users",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "password1",
-            "description": "<p>User's new password.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "password2",
-            "description": "<p>User's new password confirm.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserPasswordChange"
   },
   {
     "type": "get",
     "url": "/users/password-reset-done/",
     "title": "Request password-reset-done page",
     "name": "PasswordResetDoneView",
-    "group": "Users",
+    "group": "UserPasswordReset",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserPasswordReset"
   },
   {
     "type": "get",
     "url": "/users/password-reset/",
     "title": "Request password reset",
     "name": "PasswordResetView",
-    "group": "Users",
+    "group": "UserPasswordReset",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserPasswordReset"
   },
   {
     "type": "post",
     "url": "/users/password-reset/",
     "title": "Confirm password reset",
     "name": "PasswordResetView",
-    "group": "Users",
+    "group": "UserPasswordReset",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -110,34 +80,34 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserPasswordReset"
   },
   {
     "type": "get",
     "url": "/users/register-done/",
     "title": "Request register-done page",
     "name": "RegisterDoneView",
-    "group": "Users",
+    "group": "UserRegistration",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserRegistration"
   },
   {
     "type": "get",
     "url": "/users/register/",
     "title": "Request registration page",
     "name": "RegisterView",
-    "group": "Users",
+    "group": "UserRegistration",
     "version": "0.0.0",
     "filename": "apps/users/views.py",
-    "groupTitle": "Users"
+    "groupTitle": "UserRegistration"
   },
   {
     "type": "post",
     "url": "/users/register/",
     "title": "Request user registration",
     "name": "RegisterView",
-    "group": "Users",
+    "group": "UserRegistration",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -187,6 +157,36 @@ define({ "api": [
             "optional": false,
             "field": "redirect",
             "description": "<p>to /users/register-done/</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "apps/users/views.py",
+    "groupTitle": "UserRegistration"
+  },
+  {
+    "type": "post",
+    "url": "/users/password-change/uid_encoded/token",
+    "title": "Request password change page",
+    "name": "PasswordChangeView",
+    "group": "Users",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password1",
+            "description": "<p>User's new password.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password2",
+            "description": "<p>User's new password confirm.</p>"
           }
         ]
       }

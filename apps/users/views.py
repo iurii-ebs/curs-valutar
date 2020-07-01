@@ -27,7 +27,7 @@ class RegisterView(GenericAPIView):
         """
         @api {get} /users/register/ Request registration page
         @apiName RegisterView
-        @apiGroup Users
+        @apiGroup UserRegistration
         """
         return Response("Page: Registration page")
 
@@ -36,7 +36,7 @@ class RegisterView(GenericAPIView):
         """
         @api {post} /users/register/ Request user registration
         @apiName RegisterView
-        @apiGroup Users
+        @apiGroup UserRegistration
         @apiParam {String} first_name User's first_name.
         @apiParam {String} last_name User's last_name.
         @apiParam {String} email User's email.
@@ -85,7 +85,7 @@ class ActivateView(GenericAPIView):
         """
         @api {get} /users/activate/encoded_uid/token Request user activation
         @apiName ActivateView
-        @apiGroup Users
+        @apiGroup UserActivation
         """
         # Check if link is valid
         try:
@@ -115,7 +115,7 @@ class PasswordResetView(GenericAPIView):
         """
         @api {get} /users/password-reset/ Request password reset
         @apiName PasswordResetView
-        @apiGroup Users
+        @apiGroup UserPasswordReset
         """
         return Response("Page: Reset password page")
 
@@ -124,7 +124,7 @@ class PasswordResetView(GenericAPIView):
         """
         @api {post} /users/password-reset/ Confirm password reset
         @apiName PasswordResetView
-        @apiGroup Users
+        @apiGroup UserPasswordReset
         @apiParam {String} email User's email.
         """
         serializer = serializers.PasswordResetSerializer(data=request.data)
@@ -165,7 +165,7 @@ class PasswordChangeView(GenericAPIView):
         """
         @api {get} /users/password-change/uid_encoded/token Request password change page
         @apiName PasswordChangeView
-        @apiGroup Users
+        @apiGroup UserPasswordChange
         """
         # Check if link is valid
         try:
@@ -224,7 +224,7 @@ class RegisterDoneView(GenericAPIView):
         """
         @api {get} /users/register-done/ Request register-done page
         @apiName RegisterDoneView
-        @apiGroup Users
+        @apiGroup UserRegistration
         """
         return Response("Page: Account is successfully registered. Please follow email link for activation.")
 
@@ -239,7 +239,7 @@ class ActivateDoneView(GenericAPIView):
         """
         @api {get} /users/activate-done/ Request activate-done page
         @apiName ActivateDoneView
-        @apiGroup Users
+        @apiGroup UserActivation
         """
         return Response("Page: Account is successfully activated.")
 
@@ -254,7 +254,7 @@ class PasswordResetDoneView(GenericAPIView):
         """
         @api {get} /users/password-reset-done/ Request password-reset-done page
         @apiName PasswordResetDoneView
-        @apiGroup Users
+        @apiGroup UserPasswordReset
         """
         return Response("Page: Password reset link is send to your email.")
 
@@ -269,6 +269,6 @@ class PasswordChangeDoneView(GenericAPIView):
         """
         @api {get} /users/password-change-done/ Request password-change-done page
         @apiName PasswordChangeDoneView
-        @apiGroup Users
+        @apiGroup UserPasswordChange
         """
         return Response("Page: Password successfully changed.")

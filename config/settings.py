@@ -29,7 +29,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 
-
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -53,7 +52,6 @@ INSTALLED_APPS = [
     'apps.wallet',
     'apps.users',
     'apps.banks',
-    'apps.currency_parser',
     'apps.statistics',
 
 ]
@@ -133,7 +131,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
 }
 
 # Password validation
@@ -162,6 +160,14 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+
+# Banks parser settings
+BANKS_PARSER = {
+    'HOST': '127.0.0.2:8000',
+    'BANKS_ALL': 'http://{host}/banks/get/all',
+    'BANKS_ALL_DATE': 'http://{host}/banks/get/all/{date}',
+}
 
 
 # Internationalization
