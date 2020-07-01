@@ -1,7 +1,7 @@
 {
   "name": "Curs Valutar",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "apiDoc description",
   "title": "API Documentation",
-  "url" : "http://127.0.0.1/"
+  "url" : "http://localhost"
 }

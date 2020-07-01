@@ -1,15 +1,15 @@
 define({
   "name": "Curs Valutar",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "apiDoc description",
   "title": "API Documentation",
-  "url": "http://127.0.0.1/",
+  "url": "http://localhost",
   "sampleUrl": false,
   "defaultVersion": "0.0.0",
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2020-06-30T13:32:28.438Z",
+    "time": "2020-07-01T06:17:16.090Z",
     "url": "http://apidocjs.com",
     "version": "0.23.0"
   }
