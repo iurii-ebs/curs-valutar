@@ -77,6 +77,8 @@ class RegisterView(GenericAPIView):
 
 class ActivateView(GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = serializers.UserSerializer
+
 
     @staticmethod
     def get(request, uid_encoded, token):
@@ -215,6 +217,7 @@ class PasswordChangeView(GenericAPIView):
 
 class RegisterDoneView(GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = serializers.UserSerializer
 
     @staticmethod
     def get(request):
@@ -228,6 +231,8 @@ class RegisterDoneView(GenericAPIView):
 
 class ActivateDoneView(GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = serializers.UserSerializer
+
 
     @staticmethod
     def get(request):
@@ -241,6 +246,8 @@ class ActivateDoneView(GenericAPIView):
 
 class PasswordResetDoneView(GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = serializers.UserSerializer
+
 
     @staticmethod
     def get(request):
@@ -254,6 +261,8 @@ class PasswordResetDoneView(GenericAPIView):
 
 class PasswordChangeDoneView(GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = serializers.UserSerializer
+
 
     @staticmethod
     def get(request):

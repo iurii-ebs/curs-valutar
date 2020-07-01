@@ -196,11 +196,34 @@ define({ "api": [
     "groupTitle": "Users"
   },
   {
-    "type": "get",
+    "type": "post",
     "url": "/wallets/:id/transactions/",
     "title": "Post Wallets Transactions",
     "name": "PostTransactions",
     "group": "Wallets",
+    "description": "<p>Post transactions in the user wallet</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "defaultValue": "application/json",
+            "description": ""
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "defaultValue": "Bearer <JWT token>",
+            "description": ""
+          }
+        ]
+      }
+    },
     "parameter": {
       "fields": {
         "Parameter": [
@@ -208,8 +231,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "id",
-            "description": "<p>Wallet unique ID.</p>"
+            "field": "amount",
+            "description": "<p>Transaction amount (can be negative).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "currency",
+            "description": "<p>Currency id to transfer.</p>"
           }
         ]
       }
@@ -219,21 +249,46 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Number",
+            "type": "JSON",
             "optional": false,
-            "field": "amount",
-            "description": "<p>Transaction amount (can be negative).</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Number",
-            "optional": false,
-            "field": "currency",
-            "description": "<p>Currency id to transfer.</p>"
+            "field": "object",
+            "description": "<p>containing status as success and object message</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Success Response (Example):",
+          "content": "{\n    \"id\": 11,\n    \"wallet\": {\n        \"id\": 1,\n        \"user\": 1,\n        \"currency\": 1,\n        \"balance\": 228309,\n        \"value_buy\": 4085856.9,\n        \"value_sell\": 4018238.4,\n        \"profit\": -67618.5\n    },\n    \"amount\": 1111,\n    \"currency\": 1,\n    \"rate\": 7\n}",
+          "type": "json"
+        }
+      ]
     },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "JSON",
+            "optional": false,
+            "field": "object",
+            "description": "<p>containing status as failed and error message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error Response (Example):",
+          "content": "{\n\"detail\": \"The target wallet is not of the same currency. Please use a different wallet.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "sampleRequest": [
+      {
+        "url": "http://127.0.0.1:8000/wallets/1/transactions/"
+      }
+    ],
     "version": "0.0.0",
     "filename": "apps/wallet/views.py",
     "groupTitle": "Wallets"

@@ -47,12 +47,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'notifications',
+    'drf_yasg',
 
     # Local
+    'apps.wallet',
     'apps.users',
     'apps.banks',
     'apps.currency_parser',
-    'apps.wallet',
     'apps.statistics',
 
 ]
@@ -192,3 +193,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Swagger
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}

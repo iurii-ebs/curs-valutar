@@ -16,8 +16,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class PredictListView(GenericAPIView):
+    queryset = ''
     authentication_classes = (JWTAuthentication,)
     permission_classes = (AllowAny,)
+    serializer_class = RatesPredictionSerializer
 
     def get(self, request):
         queryset = RatesPrediction.objects.all()
@@ -26,8 +28,10 @@ class PredictListView(GenericAPIView):
 
 
 class PredictDetailView(GenericAPIView):
+    queryset = ''
     authentication_classes = (JWTAuthentication,)
     permission_classes = (AllowAny,)
+    serializer_class = RatesPredictionSerializer
 
     def get(self, request, pk):
         queryset = RatesPrediction.objects.filter(currency=pk)
@@ -36,8 +40,10 @@ class PredictDetailView(GenericAPIView):
 
 
 class PredictionDaysDetailView(GenericAPIView):
+    queryset = ''
     authentication_classes = (JWTAuthentication,)
     permission_classes = (AllowAny,)
+    serializer_class = RatesPredictionSerializer
 
     def post(self, request, pk):
         RatesPrediction.objects.all().delete()
@@ -50,8 +56,9 @@ class PredictionDaysDetailView(GenericAPIView):
 
 
 class ProgressDetailView(GenericAPIView):
+    queryset = ''
+    permission_classes = (AllowAny,)
     serializer_class = RatesHistorySerializer
-    permission_classes = [AllowAny]
 
     @staticmethod
     def get(request, pk, days):

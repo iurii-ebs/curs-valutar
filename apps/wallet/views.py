@@ -19,6 +19,7 @@ from apps.wallet.serializers import (WalletSerializer,
 class WalletListView(generics.GenericAPIView):
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    serializer_class = WalletSerializer
 
     def get(self, request):
         queryset = Wallet.objects.filter(user=request.user)
@@ -37,8 +38,10 @@ class WalletListView(generics.GenericAPIView):
 
 
 class WalletDetailView(generics.GenericAPIView):
+    queryset = ''
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsZeroBalance)
+    serializer_class = WalletSerializer
 
     def get(self, request, pk):
         queryset = get_list_or_404(Wallet, id=pk, user=request.user)
@@ -46,14 +49,16 @@ class WalletDetailView(generics.GenericAPIView):
         return Response(serializer.data)
 
     def delete(self, request, pk):
-        user_wallet = Wallet.objects.get(id=pk, user=request.user)
-        user_wallet.delete()
+        queryset = Wallet.objects.get(id=pk, user=request.user)
+        queryset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class WalletTransactionsView(generics.GenericAPIView):
+    queryset = ''
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsWalletOwner, IsSameCurrencyTransaction)
+    serializer_class = WalletOperationSerializer
 
     def get(self, request, pk):
         queryset = Wallet.objects.get(user=request.user, id=pk).operationitem.all()
@@ -62,14 +67,42 @@ class WalletTransactionsView(generics.GenericAPIView):
 
     def post(self, request, pk):
         """
-        @api {get} /wallets/:id/transactions/ Post Wallets Transactions
+        @api {post} /wallets/:id/transactions/ Post Wallets Transactions
         @apiName PostTransactions
         @apiGroup Wallets
+        @apiDescription Post transactions in the user wallet
 
-        @apiParam {Number} id Wallet unique ID.
+        @apiHeader {String} Content-Type=application/json
+        @apiHeader {String} Authorization="Bearer <JWT token>"
+        @apiParam {Number} amount Transaction amount (can be negative).
+        @apiParam {Number} currency Currency id to transfer.
 
-        @apiSuccess {Number} amount Transaction amount (can be negative).
-        @apiSuccess {Number} currency  Currency id to transfer.
+        @apiSuccess {JSON} object containing status as success and object message
+        @apiError {JSON} object containing status as failed and error message
+
+        @apiSuccessExample Success Response (Example):
+        {
+            "id": 11,
+            "wallet": {
+                "id": 1,
+                "user": 1,
+                "currency": 1,
+                "balance": 228309,
+                "value_buy": 4085856.9,
+                "value_sell": 4018238.4,
+                "profit": -67618.5
+            },
+            "amount": 1111,
+            "currency": 1,
+            "rate": 7
+        }
+
+        @apiErrorExample Error Response (Example):
+        {
+        "detail": "The target wallet is not of the same currency. Please use a different wallet."
+        }
+
+        @apiSampleRequest http://127.0.0.1:8000/wallets/1/transactions/
         """
         queryset = Wallet.objects.get(id=pk)
         serializer = WalletOperationSerializerCreate(data=request.data)
