@@ -1,5 +1,5 @@
 from django.conf import settings
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
@@ -66,7 +66,7 @@ def load_item_list(url):
     return Response(status.HTTP_200_OK)
 
 
-class LoadViewSet(viewsets.ReadOnlyModelViewSet):
+class LoadViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Load.objects.all()
     serializer_class = LoadSerializer
     permission_classes = [IsAdminUser]
