@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from datetime import date as datecreated
+from rest_framework.test import APIClient
+from rest_framework.reverse import reverse
 
 from apps.wallet.models import (Currency,
                                 Bank,
@@ -10,11 +12,13 @@ from apps.wallet.models import (Currency,
 
 
 class WalletTests(TestCase):
+    """ Database tests """
+
     @classmethod
     def setUpTestData(cls):
         # User table test data
         testuser1 = User.objects.create_user(
-            username='testuser1', password='password123'
+            username='testuser1', email='testuser1@example.com', password='password123'
         )
         testuser1.save()
 
@@ -80,3 +84,24 @@ class WalletTests(TestCase):
         wallet_operations = WalletOperation.objects.filter(wallet=1)
         amount = sum([i.amount for i in wallet_operations])
         self.assertEqual(amount, float(170000))
+
+    def setUp(self):
+        self.client = APIClient()
+        self.test_user1 = User.objects.get(email='testuser1@example.com')
+
+    """ Views tests """
+
+    def test_wallet_list_view(self):
+        self.client.force_authenticate(user=self.test_user1)
+        response = self.client.get(reverse('wallet_list'), )
+        self.assertEqual(response.status_code, 200)
+
+    def test_wallet_detail_view(self):
+        self.client.force_authenticate(user=self.test_user1)
+        response = self.client.get(reverse('wallet_detail', args=[1]), )
+        self.assertEqual(response.status_code, 200)
+
+    def test_wallet_transactions_view(self):
+        self.client.force_authenticate(user=self.test_user1)
+        response = self.client.get(reverse('wallet_transactions', args=[1]), )
+        self.assertEqual(response.status_code, 200)
