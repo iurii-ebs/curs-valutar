@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from datetime import date as datecreated
 
 from apps.wallet.models import (Currency,
+                                Bank,
                                 RatesHistory,
                                 Wallet,
                                 WalletOperation)
@@ -17,9 +18,15 @@ class WalletTests(TestCase):
         )
         testuser1.save()
 
+        # Bank table test data
+        testbank1 = Bank.objects.create(
+            registered_name='Victoriabank', short_name='VB', website='https://www.victoriabank.md/ro/currency-history'
+        )
+        testbank1.save()
+
         # Currency table test data
         testcurrency1 = Currency.objects.create(
-            name='Australian Dollar', abbr='AUD'
+            bank=testbank1, name='Australian Dollar', abbr='AUD'
         )
         testcurrency1.save()
 
@@ -31,18 +38,18 @@ class WalletTests(TestCase):
 
         # Rates history table test data
         ratehistory1 = RatesHistory.objects.create(
-            currency=testcurrency1, rate='11.8621'
+            currency=testcurrency1, rate_sell='11.8621', rate_buy='11.9615'
         )
         ratehistory1.save()
 
         # Wallet operations table test data
         walletoperations1 = WalletOperation.objects.create(
-            wallet=wallet1, rate=ratehistory1, amount=100000
+            wallet=wallet1, currency=testcurrency1, rate=ratehistory1, amount=100000
         )
         walletoperations1.save()
 
         walletoperations2 = WalletOperation.objects.create(
-            wallet=wallet1, rate=ratehistory1, amount=70000
+            wallet=wallet1, currency=testcurrency1, rate=ratehistory1, amount=70000
         )
         walletoperations2.save()
 
@@ -63,10 +70,10 @@ class WalletTests(TestCase):
     def test_rates_history(self):
         rate_history = RatesHistory.objects.get(id=1)
         currency = f'{rate_history.currency}'
-        rate = f'{rate_history.rate}'
+        rate_sell = f'{rate_history.rate_sell}'
         date = f'{rate_history.date}'
         self.assertEqual(currency, f'{Currency.objects.get(id=1)}')
-        self.assertEqual(rate, '11.8621')
+        self.assertEqual(rate_sell, '11.8621')
         self.assertEqual(date, f'{datecreated.today()}')
 
     def test_wallet_operations(self):
