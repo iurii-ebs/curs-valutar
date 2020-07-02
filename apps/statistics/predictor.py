@@ -1,11 +1,14 @@
 from sklearn.linear_model import LinearRegression
 import datetime
+from django.contrib.auth.models import User
 
 from apps.wallet.models import Currency
 
 from apps.statistics.models import RatesPrediction
 from apps.wallet.models import Wallet
 from notifications.signals import notify
+
+from celery.task import task
 
 
 def predict_function(currency_id, rates_sequence, days, future_days=0):
@@ -54,4 +57,10 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
     wallets = Wallet.objects.all()
     for wallet in wallets:
         if wallet.currency.id == currency.id:
-            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb)
+            insert_db_notifications.delay(wallet.user.id, notification_verb)
+
+
+@task(name='insert_db_notifications')
+def insert_db_notifications(user_id, verb):
+    user = User.objects.get(id=user_id)
+    notify.send(user, recipient=user, verb=verb)

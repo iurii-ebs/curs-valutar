@@ -13,3 +13,5 @@ django-notifications-hq==1.6.0
 drf-yasg==1.17.1
 swagger-spec-validator==2.7.3
 psycopg2-binary==2.8.5
+celery==4.4.6
+flower==0.9.4
