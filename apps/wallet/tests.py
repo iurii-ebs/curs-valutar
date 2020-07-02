@@ -105,3 +105,11 @@ class WalletTests(TestCase):
         self.client.force_authenticate(user=self.test_user1)
         response = self.client.get(reverse('wallet_transactions', args=[1]), )
         self.assertEqual(response.status_code, 200)
+
+    def test_predict_list_view(self):
+        response = self.client.get(reverse('predict_list'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_predict_detail_view(self):
+        response = self.client.get(reverse('predict_detail', args=[1]))
+        self.assertEqual(response.status_code, 200)
