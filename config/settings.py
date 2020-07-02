@@ -166,7 +166,7 @@ EMAIL_USE_SSL = False
 BANKS_PARSER = {
     'HOST': '127.0.0.2:8000',
     'BANKS_ALL': 'http://{host}/banks/get/all',
-    'BANKS_ALL_DATE': 'http://{host}/banks/get/all/{date}',
+    'BANKS_ALL_DATE': 'http://{host}/banks/get/all/?date={date}',
 }
 
 
