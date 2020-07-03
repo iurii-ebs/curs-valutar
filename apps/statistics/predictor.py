@@ -8,9 +8,10 @@ from apps.statistics.models import RatesPrediction
 from apps.wallet.models import Wallet
 from notifications.signals import notify
 
-from config.celery import app
+from celery import shared_task
 
 
+@shared_task(name='predict_function')
 def predict_function(currency_id, rates_sequence, days, future_days=0):
     if len(rates_sequence) % 2 == 0:
         data = rates_sequence
@@ -57,10 +58,4 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
     wallets = Wallet.objects.all()
     for wallet in wallets:
         if wallet.currency.id == currency.id:
-            insert_db_notifications.delay(wallet.user.id, notification_verb)
-
-
-@app.task(name='insert_db_notifications')
-def insert_db_notifications(user_id, verb):
-    user = User.objects.get(id=user_id)
-    notify.send(user, recipient=user, verb=verb)
+            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb)
