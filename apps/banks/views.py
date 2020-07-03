@@ -57,11 +57,11 @@ def load_item_list(url):
     response = requests.get(url)
 
     if response.status_code != status.HTTP_200_OK:
-        return Response(status.HTTP_500_INTERNAL_SERVER_ERROR, "Bad request")
+        return Response("Parser request error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     for item in json.loads(response.text):
         if not load_item(item):
-            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR, "Bad json")
+            return Response("JSON keys error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response(status.HTTP_200_OK)
 
@@ -73,7 +73,9 @@ class LoadViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def create(self, request):
         # TODO: Когда Макс доделает парсер, добавить в URL дату
-        self.get_serializer()
+        serializer = self.get_serializer()
+
+        date = serializer['date']
 
         url = settings.BANKS_PARSER['BANKS_ALL'].format(
             host=settings.BANKS_PARSER['HOST']
