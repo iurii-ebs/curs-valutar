@@ -1,9 +1,8 @@
-from celery import shared_task, task
+from celery import task
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 
 
-# TODO: Change to shared_task
 @task.task()
 def email_account_activation(user_pk, domain, uid_encoded, token):
     user = User.objects.filter(pk=user_pk).first()
@@ -24,11 +23,10 @@ def email_account_activation(user_pk, domain, uid_encoded, token):
 
     user.email_user(
         subject=email_subject,
-        message=email_message
+        message=email_message,
     )
 
 
-# TODO: Change to shared_task
 @task.task()
 def email_password_reset(user_pk, domain, uid_encoded, token):
     user = User.objects.filter(pk=user_pk).first()
@@ -49,5 +47,5 @@ def email_password_reset(user_pk, domain, uid_encoded, token):
 
     user.email_user(
         subject=email_subject,
-        message=email_message
+        message=email_message,
     )
