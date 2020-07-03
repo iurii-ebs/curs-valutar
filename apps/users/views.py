@@ -1,8 +1,8 @@
-from django.shortcuts import redirect
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import redirect
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
@@ -48,10 +48,12 @@ class RegisterView(GenericAPIView):
         user_new.set_password(serializer.validated_data['password'])
         user_new.save()
 
-        domain = get_current_site(request).domain
-        uid_encoded = urlsafe_base64_encode(force_bytes(user_new.pk))
-        token = tokens.account_activation_token.make_token(user_new)
-        email_account_activation.delay(user_new.pk, uid_encoded, token, domain)
+        email_account_activation.delay(
+            user_pk=user_new.pk,
+            domain=get_current_site(request).domain,
+            uid_encoded=urlsafe_base64_encode(force_bytes(user_new.pk)),
+            token=tokens.account_activation_token.make_token(user_new)
+        )
 
         return redirect('user_register_done')
 
@@ -115,10 +117,12 @@ class PasswordResetView(GenericAPIView):
         user = User.objects.filter(email=serializer.validated_data['email']).first()
 
         if user is not None:
-            domain = get_current_site(request).domain
-            uid_encode = urlsafe_base64_encode(force_bytes(user.pk))
-            token = tokens.password_reset_token.make_token(user)
-            email_password_reset(user.pk, domain, uid_encode, token)
+            email_password_reset.delay(
+                user_pk=user.pk,
+                domain=get_current_site(request).domain,
+                uid_encoded=urlsafe_base64_encode(force_bytes(user.pk)),
+                token=tokens.password_reset_token.make_token(user)
+            )
 
         return redirect('password_reset_done')
 
@@ -191,7 +195,11 @@ class RegisterDoneView(GenericAPIView):
         @apiName RegisterDoneView
         @apiGroup UserRegistration
         """
-        return Response("Page: Account is successfully registered. Please follow email link for activation.")
+        return Response(
+            "Page: Account is successfully registered. Please follow email link for activation.",
+            status=status.HTTP_201_CREATED,
+
+        )
 
 
 class ActivateDoneView(GenericAPIView):

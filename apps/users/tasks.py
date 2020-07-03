@@ -17,7 +17,7 @@ def email_account_activation(user_pk, domain, uid_encoded, token):
         {
             'user': user,
             'domain': domain,
-            'uid': uid_encoded,
+            'uid_encoded': uid_encoded,
             'token': token,
         }
     )
@@ -42,7 +42,7 @@ def email_password_reset(user_pk, domain, uid_encoded, token):
         {
             'user': user,
             'domain': domain,
-            'uid': uid_encoded,
+            'uid_encoded': uid_encoded,
             'token': token,
         }
     )
