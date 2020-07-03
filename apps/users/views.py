@@ -3,7 +3,6 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
@@ -11,8 +10,7 @@ from rest_framework.response import Response
 
 from apps.users import serializers
 from apps.users import tokens
-
-from .tasks import email_account_activation
+from .tasks import email_account_activation, email_password_reset
 
 
 class RegisterView(GenericAPIView):
@@ -50,11 +48,10 @@ class RegisterView(GenericAPIView):
         user_new.set_password(serializer.validated_data['password'])
         user_new.save()
 
-        uid = urlsafe_base64_encode(force_bytes(user_new.pk))
-        token = tokens.account_activation_token.make_token(user_new)
         domain = get_current_site(request).domain
-        # TODO: Add delay
-        email_account_activation(user_new.pk, uid, token, domain)
+        uid_encoded = urlsafe_base64_encode(force_bytes(user_new.pk))
+        token = tokens.account_activation_token.make_token(user_new)
+        email_account_activation.delay(user_new.pk, uid_encoded, token, domain)
 
         return redirect('user_register_done')
 
@@ -118,23 +115,10 @@ class PasswordResetView(GenericAPIView):
         user = User.objects.filter(email=serializer.validated_data['email']).first()
 
         if user is not None:
-            # Compose email
-            email_subject = render_to_string('users/account_reset_password_email_subject.html')
-            email_message = render_to_string(
-                'users/account_reset_password_email_body.html',
-                {
-                    'user': user,
-                    'domain': get_current_site(request).domain,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'token': tokens.password_reset_token.make_token(user),
-                }
-            )
-
-            # Send email
-            user.email_user(
-                subject=email_subject,
-                message=email_message
-            )
+            domain = get_current_site(request).domain
+            uid_encode = urlsafe_base64_encode(force_bytes(user.pk))
+            token = tokens.password_reset_token.make_token(user)
+            email_password_reset(user.pk, domain, uid_encode, token)
 
         return redirect('password_reset_done')
 
@@ -195,8 +179,6 @@ class PasswordChangeView(GenericAPIView):
 
         return redirect('password_change_done')
 
-
-# Redirect views
 
 class RegisterDoneView(GenericAPIView):
     permission_classes = [AllowAny]
