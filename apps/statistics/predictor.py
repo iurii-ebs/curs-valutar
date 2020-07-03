@@ -1,7 +1,7 @@
 from sklearn.linear_model import LinearRegression
 import datetime
 
-from apps.wallet.models import Currency
+from apps.wallet.models import Currency, RatesHistory
 
 from apps.statistics.models import RatesPrediction
 from apps.wallet.models import Wallet
@@ -10,7 +10,16 @@ from notifications.signals import notify
 from celery import shared_task
 
 
-@shared_task(name='predict_function')
+@shared_task(name='task_update_rate_prediction')
+def task_update_rate_prediction(days):
+    RatesPrediction.objects.all().delete()
+    currency_items = [currency_item.id for currency_item in Currency.objects.all()]
+    for currency_id in currency_items:
+        past_rates = [past_rate.rate_sell for past_rate in
+                      RatesHistory.objects.filter(currency=currency_id).order_by('date')]
+        predict_function(currency_id, past_rates, days)
+
+
 def predict_function(currency_id, rates_sequence, days, future_days=0):
     if len(rates_sequence) % 2 == 0:
         data = rates_sequence

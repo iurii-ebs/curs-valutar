@@ -3,10 +3,6 @@ from django.contrib.auth.models import User
 from datetime import date as datecreated
 from rest_framework.test import APIClient
 from rest_framework.reverse import reverse
-from celery.contrib.testing.worker import start_worker
-from django.test.utils import override_settings
-from config.celery import app
-from apps.statistics.predictor import predict_function
 
 from apps.wallet.models import (Currency,
                                 Bank,
@@ -98,6 +94,8 @@ class WalletTests(TestCase):
         self.test_user1 = User.objects.get(email='testuser1@example.com')
 
     """ Views tests """
+
+    # def test_user_
 
     def test_wallet_list_view(self):
         self.client.force_authenticate(user=self.test_user1)
