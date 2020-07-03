@@ -47,4 +47,4 @@ class PredictionDaysDetailView(GenericAPIView):
             past_rates = [past_rate.rate_sell for past_rate in RatesHistory.objects.filter(currency=currency_id).order_by('date')]
             predict_function.delay(currency_id, past_rates, pk)
 
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_200_OK)

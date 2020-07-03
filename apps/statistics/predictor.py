@@ -1,6 +1,5 @@
 from sklearn.linear_model import LinearRegression
 import datetime
-from django.contrib.auth.models import User
 
 from apps.wallet.models import Currency
 
