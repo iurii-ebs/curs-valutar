@@ -28,7 +28,7 @@ class RatesHistory(models.Model):
     )
     rate_sell = models.FloatField()
     rate_buy = models.FloatField()
-    date = models.DateField(db_index=True, auto_now_add=True)
+    date = models.DateField(db_index=True)
 
     def __str__(self):
         return f'{self.currency}, Rate Sell: {self.rate_sell} / Rate Buy: {self.rate_buy}, {self.date}'
