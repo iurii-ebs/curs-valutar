@@ -1,5 +1,6 @@
 from sklearn.linear_model import LinearRegression
 import datetime
+from django.contrib.auth.models import User
 
 from apps.wallet.models import Currency
 
@@ -7,7 +8,10 @@ from apps.statistics.models import RatesPrediction
 from apps.wallet.models import Wallet
 from notifications.signals import notify
 
+from celery import shared_task
 
+
+@shared_task(name='predict_function')
 def predict_function(currency_id, rates_sequence, days, future_days=0):
     if len(rates_sequence) % 2 == 0:
         data = rates_sequence
