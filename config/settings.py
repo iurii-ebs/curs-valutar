@@ -160,12 +160,13 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-# Banks parser settings
-BANKS_PARSER = {
-    'HOST': '127.0.0.2:8000',
-    'BANKS_ALL': 'http://{host}/banks/get/all',
-    'BANKS_ALL_DATE': 'http://{host}/banks/get/all/?date={date}',
-}
+
+# Bank parser stuff
+BP_HOST = '192.168.88.132'
+BP_PORT = '8001'
+BP_USER = os.getenv('BP_USER')
+BP_PASS = os.getenv('BP_PASS')
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
