@@ -1,7 +1,6 @@
-from celery import task
 import json
 import requests
-
+from celery import shared_task
 from django.conf import settings
 from rest_framework import status
 
@@ -18,36 +17,7 @@ def get_or_create(model, **kwargs):
     return obj
 
 
-def load_item(item):
-    """Create (if doesn't exist) bank, coin and rate from json entry."""
-    try:
-        bank = get_or_create(
-            Bank,
-            registered_name=item['bank']['name'],
-            short_name=item['bank']['short_name'],
-        )
-
-        coin = get_or_create(
-            Coin,
-            name=item['currency']['name'],
-            abbr=item['currency']['abbr'],
-            bank=bank,
-        )
-
-        rate = get_or_create(
-            Rate,
-            currency=coin,
-            rate_sell=item['rate_sell'],
-            rate_buy=item['rate_buy'],
-            date=item['date'],
-        )
-    except KeyError:
-        return False
-
-    return True
-
-
-@task.task()
+@shared_task()
 def load_rates(date):
     host = settings.BP_HOST
     port = settings.BP_PORT
@@ -76,6 +46,31 @@ def load_rates(date):
         raise ValueError("Request rates failed")
 
     # Create model instances
-    for item in json.loads(rates.text):
-        if not load_item(item):
+    rates_json = json.loads(rates.text)
+
+    print(*rates_json, sep='\n')
+
+    for item in rates_json:
+        try:
+            bank = get_or_create(
+                Bank,
+                registered_name=item['bank']['name'],
+                short_name=item['bank']['short_name'],
+            )
+
+            coin = get_or_create(
+                Coin,
+                name=item['currency']['name'],
+                abbr=item['currency']['abbr'],
+                bank=bank,
+            )
+
+            rate = get_or_create(
+                Rate,
+                currency=coin,
+                rate_sell=item['rate_sell'],
+                rate_buy=item['rate_buy'],
+                date=item['date'],
+            )
+        except KeyError:
             raise ValueError("JSON unpack failed")
