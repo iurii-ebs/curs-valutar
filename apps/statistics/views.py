@@ -9,6 +9,7 @@ from apps.statistics.serializers import RatesPredictionSerializer
 
 from apps.wallet.models import Currency, RatesHistory
 
+
 class PredictListView(GenericAPIView):
     queryset = ''
     authentication_classes = (JWTAuthentication,)
