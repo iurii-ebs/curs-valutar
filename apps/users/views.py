@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import redirect
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
@@ -15,8 +12,8 @@ from rest_framework.response import Response
 from apps.users import serializers
 from apps.users import tokens
 
+from .tasks import email_account_activation
 
-# Main views
 
 class RegisterView(GenericAPIView):
     serializer_class = serializers.UserSerializer
@@ -49,28 +46,15 @@ class RegisterView(GenericAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors)
 
-        # Create new user
         user_new = User.objects.create(is_active=False, **serializer.validated_data)
         user_new.set_password(serializer.validated_data['password'])
         user_new.save()
 
-        # Compose email
-        email_subject = render_to_string('users/account_activation_email_subject.html')
-        email_message = render_to_string(
-            'users/account_activation_email_body.html',
-            {
-                'user': user_new,
-                'domain': get_current_site(request).domain,
-                'uid': urlsafe_base64_encode(force_bytes(user_new.pk)),
-                'token': tokens.account_activation_token.make_token(user_new),
-            }
-        )
-
-        # Send email
-        user_new.email_user(
-            subject=email_subject,
-            message=email_message
-        )
+        uid = urlsafe_base64_encode(force_bytes(user_new.pk))
+        token = tokens.account_activation_token.make_token(user_new)
+        domain = get_current_site(request).domain
+        # TODO: Add delay
+        email_account_activation(user_new.pk, uid, token, domain)
 
         return redirect('user_register_done')
 
@@ -78,7 +62,6 @@ class RegisterView(GenericAPIView):
 class ActivateView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.UserSerializer
-
 
     @staticmethod
     def get(request, uid_encoded, token):
@@ -233,7 +216,6 @@ class ActivateDoneView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.UserSerializer
 
-
     @staticmethod
     def get(request):
         """
@@ -248,7 +230,6 @@ class PasswordResetDoneView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.UserSerializer
 
-
     @staticmethod
     def get(request):
         """
@@ -262,7 +243,6 @@ class PasswordResetDoneView(GenericAPIView):
 class PasswordChangeDoneView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.UserSerializer
-
 
     @staticmethod
     def get(request):

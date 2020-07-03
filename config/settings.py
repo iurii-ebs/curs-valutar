@@ -202,3 +202,6 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+CELERY_BROKER_URL = "amqp://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
+CELERY_RESULT_BACKEND = "rpc://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"

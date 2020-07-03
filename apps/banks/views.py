@@ -73,7 +73,9 @@ class LoadViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def create(self, request):
         # TODO: Когда Макс доделает парсер, добавить в URL дату
-        self.get_serializer()
+        serializer = self.get_serializer()
+
+        date = serializer['date']
 
         url = settings.BANKS_PARSER['BANKS_ALL'].format(
             host=settings.BANKS_PARSER['HOST']
