@@ -9,7 +9,6 @@ from apps.statistics.serializers import RatesPredictionSerializer
 
 from apps.wallet.models import Currency, RatesHistory
 
-
 class PredictListView(GenericAPIView):
     queryset = ''
     authentication_classes = (JWTAuthentication,)
@@ -45,6 +44,6 @@ class PredictionDaysDetailView(GenericAPIView):
         currency_items = [currency_item.id for currency_item in Currency.objects.all()]
         for currency_id in currency_items:
             past_rates = [past_rate.rate_sell for past_rate in RatesHistory.objects.filter(currency=currency_id).order_by('date')]
-            predict_function(currency_id, past_rates, pk)
+            predict_function.delay(currency_id, past_rates, pk)
 
         return Response(status=status.HTTP_201_CREATED)
