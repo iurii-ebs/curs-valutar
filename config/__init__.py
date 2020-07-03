@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-from .celery import Celery
+from .celery import app
 
-__all__ = 'config'
+__all__ = ('app',)
