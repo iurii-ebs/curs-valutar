@@ -7,71 +7,90 @@ from rest_framework import status
 from .models import Bank, Coin, Rate
 
 
-def get_or_create(model, **kwargs):
-    """Try to get instance from specified model or create them if it doesn't exist."""
-    try:
-        obj = model.objects.get(**kwargs)
-    except model.DoesNotExist:
-        obj = model.objects.create(**kwargs)
-
-    return obj
-
-
 @shared_task()
-def load_rates(date):
-    host = settings.BP_HOST
-    port = settings.BP_PORT
-    username = settings.BP_USER
-    password = settings.BP_PASS
-
-    # Request access token
-    access = requests.post(
-        url=f'http://{host}:{port}/api/user/token/',
+def create_rates(date):
+    """ Authorize to BANK PARSER and request rates """
+    # Request JWT authentication access token
+    token_request = requests.post(
+        url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/api/user/token/',
         data={
-            'username': username,
-            'password': password,
+            'username': settings.BANK_PARSER_USERNAME,
+            'password': settings.BANK_PARSER_PASSWORD,
         }
     )
 
-    if access.status_code != status.HTTP_200_OK:
-        raise ValueError("Request token failed")
+    # Check request status
+    if token_request.status_code != status.HTTP_200_OK:
+        return json.dumps(obj={
+            'ok': False,
+            'detail': f'Request token failed with code {token_request.status_code}'
+        })
 
-    # Request rates json
-    rates = requests.get(
-        url=f'http://{host}:{port}/banks/get/all/?date={date}',
-        headers={'Authorization': f'Bearer {access.json()["access"]}'},
+    # Request rates JSON
+    rates_request = requests.get(
+        url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/banks/get/all/?date={date}',
+        headers={
+            "Authorization": f'Bearer {token_request.json["access"]}'
+        }
     )
 
-    if rates.status_code != status.HTTP_200_OK:
-        raise ValueError("Request rates failed")
+    # Check request status
+    if rates_request.status_code != status.HTTP_200_OK:
+        return json.dumps(obj={
+            'ok': False,
+            'detail': f"Request rates failed with code {token_request.status_code}"
+        })
 
-    # Create model instances
-    rates_json = json.loads(rates.text)
+    # Check if rates request response is JSON
+    try:
+        rates_json = json.loads(rates_request.text)
+    except ValueError:
+        return json.dumps(obj={
+            'ok': False,
+            'detail': f"Can't parse rates request to JSON: {rates_request.text}",
+        })
 
-    print(rates_json)
-    return
+    # TODO: Validate JSON Schema
+
+    # Create instances
+    detail = {
+        'Bank': {'created': 0, 'skipped': 0},
+        'Coin': {'created': 0, 'skipped': 0},
+        'Rate': {'created': 0, 'skipped': 0},
+    }
+
+    count = len(rates_json)
 
     for item in rates_json:
-        try:
-            bank = get_or_create(
-                Bank,
-                registered_name=item['bank']['name'],
-                short_name=item['bank']['short_name'],
-            )
+        bank, created = Bank.objects.get_or_create(
+            registered_name=item['bank']['name'],
+            short_name=item['bank']['short_name'],
+        )
+        if created:
+            detail['Bank']['created'] += 1
 
-            coin = get_or_create(
-                Coin,
-                name=item['currency']['name'],
-                abbr=item['currency']['abbr'],
-                bank=bank,
-            )
+        coin, created = Coin.objects.get_or_create(
+            name=item['currency']['name'],
+            abbr=item['currency']['abbr'],
+            bank=bank,
+        )
+        if created:
+            detail['Coin']['created'] += 1
 
-            rate = get_or_create(
-                Rate,
-                currency=coin,
-                rate_sell=item['rate_sell'],
-                rate_buy=item['rate_buy'],
-                date=item['date'],
-            )
-        except KeyError:
-            raise ValueError("JSON unpack failed")
+        rate, created = Rate.objects.get_or_create(
+            currency=coin,
+            rate_sell=item['rate_sell'],
+            rate_buy=item['rate_buy'],
+            date=item['date'],
+        )
+        if created:
+            detail['Rate']['created'] += 1
+
+    detail['Bank']['skipped'] = count - detail['Bank']['created']
+    detail['Coin']['skipped'] = count - detail['Bank']['created']
+    detail['Rate']['skipped'] = count - detail['Bank']['created']
+
+    return json.dumps({
+        'ok': True,
+        'detail': detail,
+    })

@@ -26,5 +26,7 @@ urlpatterns = [
     path('rate/<int:pk>/', RateViewSet.as_view(actions=actions_detail), name='rate-detail'),
     path('bank/<int:pk>/coins/', BankViewSet.as_view(actions={'get': 'list_coins'}), name='bank-list-coins'),
     path('coin/<int:pk>/rates/', CoinViewSet.as_view(actions={'get': 'list_rates'}), name='coin-list-rates'),
-    path('coin/<int:pk>/rates/<int:days>', CoinViewSet.as_view(actions={'get': 'list_rates_from'}), name='coin-list-rates-from'),
+    path('coin/<int:pk>/rates/<int:days>',
+         CoinViewSet.as_view(actions={'get': 'list_rates_from'}),
+         name='coin-list-rates-from'),
 ]

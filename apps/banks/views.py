@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from .models import Bank, Coin, Rate, Load
 from .serializers import BankSerializer, CoinSerializer, RateSerializer, LoadSerializer
 from .permissions import IsStaffOrReadOnly
-from .tasks import load_rates
+from .tasks import create_rates
 
 
 class LoadViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -23,9 +23,9 @@ class LoadViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors)
 
-        load_rates.delay(date=str(serializer.validated_data['date']))
+        create_rates.delay(date=str(serializer.validated_data['date']))
 
-        return Response("Parsing request has been send")
+        return Response('{"detail": "Parsing request has been send"}')
 
 
 class BankViewSet(viewsets.ReadOnlyModelViewSet):

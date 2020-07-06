@@ -163,11 +163,11 @@ EMAIL_USE_SSL = False
 
 
 # Bank parser stuff
-BP_HOST = '192.168.88.132'
-BP_PORT = '8001'
-BP_USER = os.getenv('BP_USER')
-BP_PASS = os.getenv('BP_PASS')
-BP_DATE = '%Y-%m-%d'
+BANK_PARSER_HOST = os.getenv('BANK_PARSER_HOST')
+BANK_PARSER_PORT = os.getenv('BANK_PARSER_PORT')
+BANK_PARSER_USERNAME = os.getenv('BANK_PARSER_USERNAME')
+BANK_PARSER_PASSWORD = os.getenv('BANK_PARSER_PASSWORD')
+BANK_PARSER_DATE_FORMAT = '%Y-%m-%d'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

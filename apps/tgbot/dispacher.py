@@ -23,3 +23,8 @@ def echo_message(message):
 bot.remove_webhook()
 time.sleep(1)
 bot.set_webhook(url=f'{settings.BOT_BASE}{settings.BOT_PATH}')
+
+
+def process_new_updates(request):
+    update = telebot.types.Update.de_json(request.data)
+    bot.process_new_updates([update])

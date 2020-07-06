@@ -2,8 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .dispacher import bot
-import telebot
+from .dispacher import process_new_updates
 
 
 class WebHookView(APIView):
@@ -11,7 +10,5 @@ class WebHookView(APIView):
 
     @staticmethod
     def post(request):
-        update = telebot.types.Update.de_json(request.data)
-        bot.process_new_updates([update])
-
+        process_new_updates(request)
         return Response()
