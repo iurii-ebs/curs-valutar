@@ -48,7 +48,8 @@ def load_rates(date):
     # Create model instances
     rates_json = json.loads(rates.text)
 
-    print(*rates_json, sep='\n')
+    print(rates_json)
+    return
 
     for item in rates_json:
         try:

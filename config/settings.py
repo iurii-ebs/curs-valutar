@@ -166,8 +166,7 @@ BP_HOST = '192.168.88.132'
 BP_PORT = '8001'
 BP_USER = os.getenv('BP_USER')
 BP_PASS = os.getenv('BP_PASS')
-
-DATE_INPUT_FORMATS = ['%Y-%m-%d']
+BP_DATE = '%Y-%m-%d'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -204,3 +203,6 @@ SWAGGER_SETTINGS = {
 
 CELERY_BROKER_URL = "amqp://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
 CELERY_RESULT_BACKEND = "rpc://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
+
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_URL = f'https://api.telegram.org/bot{BOT_TOKEN}'

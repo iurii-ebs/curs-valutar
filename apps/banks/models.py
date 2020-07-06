@@ -7,4 +7,4 @@ from apps.wallet.models import Currency as Coin
 
 
 class Load(models.Model):
-    date = models.DateField(blank=True, input_formats=settings.DATE_INPUT_FORMATS)
+    date = models.DateField(blank=True)

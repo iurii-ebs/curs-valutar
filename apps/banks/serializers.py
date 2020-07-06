@@ -1,4 +1,6 @@
+from django.conf import settings
 from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import DateField
 from .models import Bank, Coin, Rate, Load
 
 
@@ -24,3 +26,6 @@ class LoadSerializer(ModelSerializer):
     class Meta:
         model = Load
         fields = '__all__'
+        extra_kwargs = {
+            'date': {'format': settings.BP_DATE}
+        }
