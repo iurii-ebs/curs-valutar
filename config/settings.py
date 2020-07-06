@@ -167,6 +167,7 @@ BP_PORT = '8001'
 BP_USER = os.getenv('BP_USER')
 BP_PASS = os.getenv('BP_PASS')
 
+DATE_INPUT_FORMATS = ['%Y-%m-%d']
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

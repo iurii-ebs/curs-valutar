@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, AllowAny
@@ -7,8 +9,6 @@ from .models import Bank, Coin, Rate, Load
 from .serializers import BankSerializer, CoinSerializer, RateSerializer, LoadSerializer
 from .permissions import IsStaffOrReadOnly
 from .tasks import load_rates
-
-from datetime import datetime, timedelta
 
 
 class LoadViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
