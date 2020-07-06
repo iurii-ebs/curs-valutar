@@ -18,6 +18,8 @@ def debug_task(self):
     print('Request: {0!r}'.format(self.request))
 
 
+app.conf.timezone = 'Europe/Moscow'
+
 app.conf.beat_schedule = {
     'rate-prediction-daily-9-AM': {
         'task': 'task_update_rate_prediction',
@@ -25,4 +27,3 @@ app.conf.beat_schedule = {
         'args': (7,)
     },
 }
-app.conf.timezone = 'Europe/Moscow'
