@@ -43,7 +43,7 @@ def model_predict_linear(currency_id, rates_sequence, days_to_predict_left, inde
     rates_sequence += [tomorrow_rate_new_coord_y]                                               # Append the new predicted sell_rate to initial array rates_sequence
     if days_to_predict_left == 1:                                                               # Entire function predicts +1 day recursively, recursion breaks when there are no more days left to predict
         analyst_agent(currency_id, rates_sequence, index_predicted_days)                        # Send currency ID which was predicted and old rates + new rates to analyst_agent()
-        create_rate_predictions(currency_id, rates_sequence[index_predicted_days:])             # This function will save only the new predicted rates in the RatesPrediction table
+        create_rate_predictions(currency_id, rates_sequence[- index_predicted_days:])           # This function will save only the new predicted rates in the RatesPrediction table
         return
     days_to_predict_left -= 1
     model_predict_linear(currency_id, rates_sequence, days_to_predict_left, index_predicted_days)
@@ -54,11 +54,11 @@ def create_rate_predictions(currency_id, rates_future):
     Save predicted data into database
     """
     currency = Currency.objects.get(id=currency_id)
-    for x in range(len(rates_future)):
+    for day, rate_future in enumerate(rates_future):
         RatesPrediction.objects.create(
             currency=currency,
-            rate_sell=rates_future[x],
-            date=datetime.date.today() + datetime.timedelta(x + 1)
+            rate_sell=rate_future,
+            date=datetime.date.today() + datetime.timedelta(day + 1)
         )
 
 
