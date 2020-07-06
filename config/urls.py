@@ -19,6 +19,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include("apps.users.urls")),
     path('banks/', include("apps.banks.urls")),
+    path('tgbot/', include("apps.tgbot.urls")),
     path('wallets/', include("apps.wallet.urls")),
     path('statistics/', include("apps.statistics.urls")),
     path('notifications/', include('notifications.urls', namespace='notifications')),
