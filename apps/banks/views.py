@@ -14,18 +14,19 @@ from .tasks import create_rates
 class LoadViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Load.objects.all()
     serializer_class = LoadSerializer
-    # TODO: Replace AllowAny with IsAdminUser
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors)
-
         create_rates.delay(date=str(serializer.validated_data['date']))
 
-        return Response('{"detail": "Parsing request has been send"}')
+        return Response({
+            'ok': True,
+            'detail': 'Load rates request is sent',
+        })
 
 
 class BankViewSet(viewsets.ReadOnlyModelViewSet):

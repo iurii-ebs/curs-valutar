@@ -168,6 +168,28 @@ BANK_PARSER_PORT = os.getenv('BANK_PARSER_PORT')
 BANK_PARSER_USERNAME = os.getenv('BANK_PARSER_USERNAME')
 BANK_PARSER_PASSWORD = os.getenv('BANK_PARSER_PASSWORD')
 BANK_PARSER_DATE_FORMAT = '%Y-%m-%d'
+BANK_PARSER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "bank": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "short_name": {"type": "string"},
+            },
+        },
+        "currency": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "abbr": {"type": "string"},
+            },
+        },
+        "rate_sell": {"type": "number"},
+        "rate_buy": {"type": "number"},
+        "date": {"type": "string"},
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

@@ -1,4 +1,5 @@
 import json
+import jsonschema
 import requests
 from celery import shared_task
 from django.conf import settings
@@ -7,50 +8,80 @@ from rest_framework import status
 from .models import Bank, Coin, Rate
 
 
+# TODO: Make an scheduled task
 @shared_task()
 def create_rates(date):
     """ Authorize to BANK PARSER and request rates """
     # Request JWT authentication access token
-    token_request = requests.post(
-        url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/api/user/token/',
-        data={
-            'username': settings.BANK_PARSER_USERNAME,
-            'password': settings.BANK_PARSER_PASSWORD,
-        }
-    )
-
-    # Check request status
-    if token_request.status_code != status.HTTP_200_OK:
-        return json.dumps(obj={
+    try:
+        token_request = requests.post(
+            url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/api/user/token/',
+            data={
+                'username': settings.BANK_PARSER_USERNAME,
+                'password': settings.BANK_PARSER_PASSWORD,
+            },
+            timeout=10,
+        )
+    except Exception as e:
+        return {
             'ok': False,
-            'detail': f'Request token failed with code {token_request.status_code}'
-        })
+            'detail': f'Token request failed with exception {e}',
+        }
+
+    # Check token request status
+    if token_request.status_code != status.HTTP_200_OK:
+        return {
+            'ok': False,
+            'detail': f'Token request failed with status {token_request.status_code}',
+        }
 
     # Request rates JSON
-    rates_request = requests.get(
-        url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/banks/get/all/?date={date}',
-        headers={
-            "Authorization": f'Bearer {token_request.json["access"]}'
-        }
-    )
-
-    # Check request status
-    if rates_request.status_code != status.HTTP_200_OK:
-        return json.dumps(obj={
+    try:
+        rates_request = requests.get(
+            url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/banks/get/all/?date={date}',
+            headers={
+                "Authorization": f'Bearer {token_request.json()["access"]}',
+            },
+            timeout=60,
+        )
+    except Exception as e:
+        return {
             'ok': False,
-            'detail': f"Request rates failed with code {token_request.status_code}"
-        })
+            'detail': f'Rates request failed with exception {e}',
+        }
+
+    # Check rates request status
+    if rates_request.status_code != status.HTTP_200_OK:
+        return {
+            'ok': False,
+            'detail': f"Rates request failed with status {token_request.status_code}",
+        }
 
     # Check if rates request response is JSON
     try:
         rates_json = json.loads(rates_request.text)
     except ValueError:
-        return json.dumps(obj={
+        return {
             'ok': False,
-            'detail': f"Can't parse rates request to JSON: {rates_request.text}",
-        })
+            'detail': f"Rates JSON parsing failed {rates_request.text}",
+        }
 
-    # TODO: Validate JSON Schema
+    # Check if rates_json is a list
+    if not isinstance(rates_json, list):
+        return {
+            'ok': False,
+            'detail': f'Rates JSON is not a list',
+        }
+
+    # Check if rates_json items have valid schema
+    try:
+        for item in rates_json:
+            jsonschema.validate(instance=item, schema=settings.BANK_PARSER_SCHEMA)
+    except jsonschema.exceptions.ValidationError:
+        return {
+            'ok': False,
+            'detail': f"Rates JSON schema validation failed"
+        }
 
     # Create instances
     detail = {
@@ -87,10 +118,10 @@ def create_rates(date):
             detail['Rate']['created'] += 1
 
     detail['Bank']['skipped'] = count - detail['Bank']['created']
-    detail['Coin']['skipped'] = count - detail['Bank']['created']
-    detail['Rate']['skipped'] = count - detail['Bank']['created']
+    detail['Coin']['skipped'] = count - detail['Coin']['created']
+    detail['Rate']['skipped'] = count - detail['Rate']['created']
 
-    return json.dumps({
+    return {
         'ok': True,
         'detail': detail,
-    })
+    }
