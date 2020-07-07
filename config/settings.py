@@ -231,6 +231,7 @@ CELERY_RESULT_BACKEND = "rpc://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
 
 # Telegram bot settings
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-BOT_HOST = '22035c276b3b.ngrok.io'
+BOT_NAME = 'curs_valutar_bot'
+BOT_HOST = 'c152ab2e3233.ngrok.io'
 BOT_BASE = f"https://{BOT_HOST}"
 BOT_PATH = f"/tgbot/{BOT_TOKEN}/"
