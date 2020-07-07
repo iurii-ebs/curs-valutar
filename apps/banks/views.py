@@ -1,21 +1,22 @@
 from datetime import datetime, timedelta
 
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import ListModelMixin
 from rest_framework.decorators import action
+from rest_framework.generics import QuerySet
+from rest_framework.mixins import ListModelMixin
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.generics import QuerySet
+from rest_framework.viewsets import GenericViewSet
 
 from .models import Bank, Coin, Rate, Load
-from .serializers import BankSerializer, CoinSerializer, RateSerializer, LoadSerializer
 from .permissions import IsStaffOrReadOnly
+from .serializers import BankSerializer, CoinSerializer, RateSerializer, LoadSerializer
 from .tasks import create_rates
 
 
 def paginate(func):
     """ Decorator used to make custom actions able for pagination """
+
     def decorator(self, *args, **kwargs):
         queryset = func(self, *args, **kwargs)
 
@@ -30,14 +31,15 @@ def paginate(func):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
     return decorator
 
 
 class DefaultPagination(PageNumberPagination):
     """ Default pagination class """
-    page_size = 5
+    page_size = 10
     page_size_query_param = 'page_size'
-    max_page_size = 10
+    max_page_size = 50
 
 
 class LoadViewSet(ListModelMixin, GenericViewSet):

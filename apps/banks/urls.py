@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import BankViewSet, CoinViewSet, RateViewSet, LoadViewSet
 
+from .views import BankViewSet, CoinViewSet, RateViewSet, LoadViewSet
 
 urlpatterns = [
     path('load/', LoadViewSet.as_view(actions={'get': 'list', 'post': 'create'}), name='load_list'),
