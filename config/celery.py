@@ -21,16 +21,13 @@ def debug_task(self):
 app.conf.timezone = 'Europe/Moscow'
 
 app.conf.beat_schedule = {
-    'rate-prediction-daily-9-AM': {
+    'rate-prediction-daily': {
         'task': 'update_rate_prediction',
-        'schedule': crontab(minute="0", hour="9"),
+        'schedule': crontab(minute="50", hour="8"),
         'args': (7,)
     },
-}
-
-app.conf.beat_schedule = {
     'elasticsearch-indexation-rates_history': {
         'task': 'indexation_es_rateshistory',
-        'schedule': crontab(minute="1", hour="9")
+        'schedule': crontab(minute="45", hour="8")
     },
 }
