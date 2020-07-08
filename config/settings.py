@@ -120,7 +120,7 @@ DATABASES = {
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
-        'PORT': '5432',
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -162,8 +162,8 @@ EMAIL_USE_SSL = False
 
 
 # Bank parser stuff
-BP_HOST = '192.168.88.132'
-BP_PORT = '8001'
+BP_HOST = os.getenv('BP_HOST')
+BP_PORT = os.getenv('BP_PORT')
 BP_USER = os.getenv('BP_USER')
 BP_PASS = os.getenv('BP_PASS')
 
@@ -201,5 +201,5 @@ SWAGGER_SETTINGS = {
     }
 }
 
-CELERY_BROKER_URL = "amqp://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
-CELERY_RESULT_BACKEND = "rpc://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
