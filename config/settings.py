@@ -160,13 +160,11 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-
 # Bank parser stuff
 BP_HOST = os.getenv('BP_HOST')
 BP_PORT = os.getenv('BP_PORT')
 BP_USER = os.getenv('BP_USER')
 BP_PASS = os.getenv('BP_PASS')
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -203,3 +201,8 @@ SWAGGER_SETTINGS = {
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+
+ELASTIC = {
+    'hosts': 'es-internship.devebs.net',
+    'index_prefix': 'curs-valutar'
+}
