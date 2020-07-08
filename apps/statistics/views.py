@@ -4,8 +4,23 @@ from rest_framework.generics import GenericAPIView
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from apps.statistics.models import RatesPrediction
-from apps.statistics.predictor import task_update_rate_prediction
+from apps.statistics.tasks import update_rate_prediction, indexation_es_rateshistory
 from apps.statistics.serializers import RatesPredictionSerializer
+from apps.wallet.serializers import RatesHistory, RatesHistorySerializer
+
+
+class RatesHistoryListView(GenericAPIView):
+    queryset = ''
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (AllowAny,)
+    serializer_class = RatesHistorySerializer
+
+    def get(self, request):
+        indexation_es_rateshistory.delay()  # to be removed - task moved to celery beat
+
+        queryset = RatesHistory.objects.all()
+        serializer = RatesPredictionSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class PredictListView(GenericAPIView):
@@ -39,5 +54,5 @@ class PredictionDaysDetailView(GenericAPIView):
     serializer_class = RatesPredictionSerializer
 
     def post(self, request, pk):
-        task_update_rate_prediction.delay(pk)
+        update_rate_prediction.delay(pk)
         return Response(status=status.HTTP_200_OK)

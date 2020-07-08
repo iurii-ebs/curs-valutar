@@ -240,6 +240,11 @@ SWAGGER_SETTINGS = {
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
+ELASTIC = {
+    'hosts': 'es-internship.devebs.net',
+    'index_prefix': 'curs-valutar'
+}
+
 # Telegram bot settings
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 BOT_NAME = 'curs_valutar_bot'

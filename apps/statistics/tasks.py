@@ -9,9 +9,11 @@ from notifications.signals import notify
 
 from celery import shared_task
 
+from config.elastic import es
 
-@shared_task(name='task_update_rate_prediction')
-def task_update_rate_prediction(days_to_predict):
+
+@shared_task(name='update_rate_prediction')
+def update_rate_prediction(days_to_predict):
     RatesPrediction.objects.all().delete()                                                           # Clear old predicted rates to update based on new actual rate today
     currency_items = [currency_item.id for currency_item in Currency.objects.all()]                  # Make an array of currency IDs currently present in Currency table
     for currency_id in currency_items:                                                               # For each currency ID get its sell history and create an array. Example: [17.2, 17.3, 17.4 ...] and send this data to model_predict_linear() plus how many days to predict
@@ -84,3 +86,15 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
     for wallet in wallets:
         if wallet.currency.id == currency.id:
             notify.send(wallet.user, recipient=wallet.user, verb=notification_verb)
+
+
+@shared_task(name='indexation_es_rateshistory')
+def indexation_es_rateshistory():
+    queryset = RatesHistory.objects.all()
+    for index, doc in enumerate(queryset):
+        es.add_document(
+            index='curs-valutar',
+            doc_type='rates-history',
+            document=doc.es_doc(),
+            document_id=doc.id
+        )

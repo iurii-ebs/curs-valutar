@@ -22,8 +22,15 @@ app.conf.timezone = 'Europe/Moscow'
 
 app.conf.beat_schedule = {
     'rate-prediction-daily-9-AM': {
-        'task': 'task_update_rate_prediction',
+        'task': 'update_rate_prediction',
         'schedule': crontab(minute="0", hour="9"),
         'args': (7,)
+    },
+}
+
+app.conf.beat_schedule = {
+    'elasticsearch-indexation-rates_history': {
+        'task': 'indexation_es_rateshistory',
+        'schedule': crontab(minute="1", hour="9")
     },
 }
