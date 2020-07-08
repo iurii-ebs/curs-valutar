@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import os
-
+from django.conf import settings
 from celery import Celery
 from celery.schedules import crontab
 
@@ -18,7 +18,7 @@ def debug_task(self):
     print('Request: {0!r}'.format(self.request))
 
 
-app.conf.timezone = 'Europe/Moscow'
+app.conf.timezone = settings.TIME_ZONE
 
 app.conf.beat_schedule = {
     'rate-prediction-daily': {
