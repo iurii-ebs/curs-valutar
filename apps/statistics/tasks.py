@@ -99,6 +99,7 @@ def indexation_es_rateshistory():
             document_id=doc.id
         )
 
+
 @shared_task(name='indexation_es_ratesprediction')
 def indexation_es_ratesprediction():
     queryset = RatesPrediction.objects.all()
