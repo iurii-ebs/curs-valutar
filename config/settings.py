@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import datetime
 from dotenv import load_dotenv
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -132,8 +133,18 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100,
+}
+
+JWT_AUTH = {
+    # how long the original token is valid for
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=2),
+
+    # allow refreshing of tokens
+    'JWT_ALLOW_REFRESH': True,
+
+    # this is the maximum time AFTER the token was issued that
+    # it can be refreshed.  exprired tokens can't be refreshed.
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
 
 # Password validation
@@ -232,6 +243,6 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 # Telegram bot settings
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 BOT_NAME = 'curs_valutar_bot'
-BOT_HOST = '2565108b0f74.ngrok.io'
+BOT_HOST = '27ea7d79a048.ngrok.io'
 BOT_BASE = f"https://{BOT_HOST}/"
-BOT_PATH = f"tgbot/{BOT_TOKEN}/"
+BOT_PATH = f"tgbot/{BOT_NAME}/"
