@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.wallet',
     'apps.users',
     'apps.banks',
+    'apps.tgbot',
     'apps.statistics',
 
 ]
@@ -131,6 +132,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
 }
 
 # Password validation
@@ -162,11 +165,33 @@ EMAIL_USE_SSL = False
 
 
 # Bank parser stuff
-BP_HOST = os.getenv('BP_HOST')
-BP_PORT = os.getenv('BP_PORT')
-BP_USER = os.getenv('BP_USER')
-BP_PASS = os.getenv('BP_PASS')
-
+BANK_PARSER_HOST = os.getenv('BANK_PARSER_HOST')
+BANK_PARSER_PORT = os.getenv('BANK_PARSER_PORT')
+BANK_PARSER_USERNAME = os.getenv('BANK_PARSER_USERNAME')
+BANK_PARSER_PASSWORD = os.getenv('BANK_PARSER_PASSWORD')
+BANK_PARSER_DATE_FORMAT = '%Y-%m-%d'
+BANK_PARSER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "bank": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "short_name": {"type": "string"},
+            },
+        },
+        "currency": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "abbr": {"type": "string"},
+            },
+        },
+        "rate_sell": {"type": "number"},
+        "rate_buy": {"type": "number"},
+        "date": {"type": "string"},
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -203,3 +228,10 @@ SWAGGER_SETTINGS = {
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+
+# Telegram bot settings
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_NAME = 'curs_valutar_bot'
+BOT_HOST = '2565108b0f74.ngrok.io'
+BOT_BASE = f"https://{BOT_HOST}/"
+BOT_PATH = f"tgbot/{BOT_TOKEN}/"
