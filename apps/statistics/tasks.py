@@ -93,8 +93,19 @@ def indexation_es_rateshistory():
     queryset = RatesHistory.objects.all()
     for index, doc in enumerate(queryset):
         es.add_document(
-            index='curs-valutar',
-            doc_type='rates-history',
+            index='rates-history',
+            doc_type='curs-valutar',
+            document=doc.es_doc(),
+            document_id=doc.id
+        )
+
+@shared_task(name='indexation_es_ratesprediction')
+def indexation_es_ratesprediction():
+    queryset = RatesPrediction.objects.all()
+    for index, doc in enumerate(queryset):
+        es.add_document(
+            index='rates-prediction',
+            doc_type='curs-valutar',
             document=doc.es_doc(),
             document_id=doc.id
         )

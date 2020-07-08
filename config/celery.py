@@ -28,6 +28,10 @@ app.conf.beat_schedule = {
     },
     'elasticsearch-indexation-rates_history': {
         'task': 'indexation_es_rateshistory',
-        'schedule': crontab(minute="45", hour="8")
+        'schedule': crontab(minute="55", hour="8")
+    },
+    'elasticsearch-indexation_es_ratesprediction': {
+        'task': 'indexation_es_ratesprediction',
+        'schedule': crontab(minute="55", hour="8")
     },
 }
