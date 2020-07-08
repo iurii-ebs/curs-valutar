@@ -45,6 +45,10 @@ class WalletTests(TestCase):
             currency=testcurrency1, rate_sell='11.8621', rate_buy='11.9615'
         )
         ratehistory1.save()
+        ratehistory2 = RatesHistory.objects.create(
+            currency=testcurrency1, rate_sell='11.9621', rate_buy='12.0000'
+        )
+        ratehistory2.save()
 
         # Wallet operations table test data
         walletoperations1 = WalletOperation.objects.create(
@@ -91,6 +95,8 @@ class WalletTests(TestCase):
 
     """ Views tests """
 
+    # def test_user_
+
     def test_wallet_list_view(self):
         self.client.force_authenticate(user=self.test_user1)
         response = self.client.get(reverse('wallet_list'), )
@@ -112,4 +118,9 @@ class WalletTests(TestCase):
 
     def test_predict_detail_view(self):
         response = self.client.get(reverse('predict_detail', args=[1]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_predict_days_view(self):
+        self.client.force_authenticate(user=self.test_user1)
+        response = self.client.post(reverse('prediction_days', args=[3]))
         self.assertEqual(response.status_code, 200)

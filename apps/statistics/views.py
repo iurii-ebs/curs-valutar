@@ -4,10 +4,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from apps.statistics.models import RatesPrediction
-from apps.statistics.predictor import predict_function
+from apps.statistics.predictor import task_update_rate_prediction
 from apps.statistics.serializers import RatesPredictionSerializer
-
-from apps.wallet.models import Currency, RatesHistory
 
 
 class PredictListView(GenericAPIView):
@@ -41,10 +39,5 @@ class PredictionDaysDetailView(GenericAPIView):
     serializer_class = RatesPredictionSerializer
 
     def post(self, request, pk):
-        RatesPrediction.objects.all().delete()
-        currency_items = [currency_item.id for currency_item in Currency.objects.all()]
-        for currency_id in currency_items:
-            past_rates = [past_rate.rate_sell for past_rate in RatesHistory.objects.filter(currency=currency_id).order_by('date')]
-            predict_function.delay(currency_id, past_rates, pk)
-
-        return Response(status=status.HTTP_201_CREATED)
+        task_update_rate_prediction.delay(pk)
+        return Response(status=status.HTTP_200_OK)

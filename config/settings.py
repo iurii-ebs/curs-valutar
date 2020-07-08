@@ -121,7 +121,7 @@ DATABASES = {
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
-        'PORT': '5432',
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -226,12 +226,12 @@ SWAGGER_SETTINGS = {
     }
 }
 
-CELERY_BROKER_URL = "amqp://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
-CELERY_RESULT_BACKEND = "rpc://mqadmin:Y4R2jhPlbz@46.101.172.171:5672"
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 # Telegram bot settings
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 BOT_NAME = 'curs_valutar_bot'
-BOT_HOST = 'c152ab2e3233.ngrok.io'
+BOT_HOST = '2565108b0f74.ngrok.io'
 BOT_BASE = f"https://{BOT_HOST}/"
 BOT_PATH = f"tgbot/{BOT_TOKEN}/"
