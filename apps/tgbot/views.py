@@ -1,34 +1,37 @@
+from datetime import datetime
+
 from django.conf import settings
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import TelegramUser
-from .serializers import TelegramUserSerializer
-from .dispacher import process_new_updates, telegram_user
+from .bot import bot_update, bot_notify
 from .tokens import build_token
 
 
-class WebHookView(APIView):
+class TelegramWebHookView(APIView):
     permission_classes = [AllowAny]
 
     @staticmethod
     def post(request):
-        process_new_updates(request)
+        bot_update(request)
         return Response()
 
 
-class TelegramRegisterViewSet(APIView):
+class TelegramRegisterView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    @staticmethod
+    def get(request):
         user = request.user
-        token = build_token()
 
-        TelegramUser.objects.create(user=user, token=token)
+        chat_user = TelegramUser.objects.get_or_create(user=user)
+        chat_user.token = build_token()
+        chat_user.created = datetime.now()
+        chat_user.save()
 
-        url = f'https://t.me/{settings.BOT_NAME}/?start={token}'
+        url = f'https://t.me/{settings.BOT_NAME}/?start={chat_user.token}'
 
         return Response({
             'ok': True,
@@ -37,14 +40,15 @@ class TelegramRegisterViewSet(APIView):
         })
 
 
-class TelegramNotification(APIView):
+class TelegramTestNotificationView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    @staticmethod
+    def get(request):
         users = TelegramUser.objects.filter(chat_id__isnull=False)
 
         for user in users:
-            telegram_user(user.chat_id, "Hello notifications")
+            bot_notify(user, "Test notification")
 
         return Response({
             'ok': True,

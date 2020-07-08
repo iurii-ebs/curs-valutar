@@ -1,10 +1,8 @@
-from django.conf import settings
 from django.urls import path
-from .views import WebHookView, TelegramRegisterViewSet, TelegramNotification
+from .views import TelegramRegisterView, TelegramTestNotificationView
 
 
 urlpatterns = [
-    path(settings.BOT_TOKEN + '/', WebHookView.as_view(), name='bot-web-hook'),
-    path('register/', TelegramRegisterViewSet.as_view(), name='telegram-register'),
-    path('notification/', TelegramNotification.as_view(), name='telegram-notification'),
+    path('register/', TelegramRegisterView.as_view(), name='telegram-register'),
+    path('notify/', TelegramTestNotificationView.as_view(), name='telegram-test'),
 ]
