@@ -11,6 +11,9 @@ from .tokens import build_token
 
 
 class TelegramWebHookView(APIView):
+    """
+    Webhook for telegram bot. Used only by telegram
+    """
     permission_classes = [AllowAny]
 
     @staticmethod
@@ -20,13 +23,17 @@ class TelegramWebHookView(APIView):
 
 
 class TelegramRegisterView(APIView):
+    """
+    Link authenticated user with telegram_user id
+    Return url
+    """
     permission_classes = [IsAuthenticated]
 
     @staticmethod
     def get(request):
         user = request.user
 
-        chat_user = TelegramUser.objects.get_or_create(user=user)
+        chat_user, created = TelegramUser.objects.get_or_create(user=user)
         chat_user.token = build_token()
         chat_user.created = datetime.now()
         chat_user.save()
@@ -41,14 +48,17 @@ class TelegramRegisterView(APIView):
 
 
 class TelegramTestNotificationView(APIView):
+    """
+    Test telegram notification
+    """
     permission_classes = [AllowAny]
 
     @staticmethod
     def get(request):
-        users = TelegramUser.objects.filter(chat_id__isnull=False)
+        chat_users = TelegramUser.objects.filter(chat_id__isnull=False)
 
-        for user in users:
-            bot_notify(user, "Test notification")
+        for chat_user in chat_users:
+            bot_notify(chat_user.user, "Test notification")
 
         return Response({
             'ok': True,

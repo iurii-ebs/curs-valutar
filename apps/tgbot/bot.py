@@ -29,9 +29,14 @@ def start_token(message):
         bot.send_message(message.chat.id, "Please follow {register link}")
 
 
-@bot.message_handler(commands=['/message'], content_types=['text'])
+@bot.message_handler(commands=['message'], content_types=['text'])
 def test_message(message):
     bot.send_message(message.chat.id, message)
+
+
+@bot.message_handler(func=lambda m: True, content_types=['text'])
+def test_echo(message):
+    bot.send_message(message.chat.id, message.text)
 
 
 # Setup webhook
