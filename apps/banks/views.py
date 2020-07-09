@@ -43,7 +43,7 @@ class DefaultPagination(PageNumberPagination):
 
 
 class LoadViewSet(ListModelMixin, GenericViewSet):
-    """ Endpoints used to load banks, coins and rates from BANK PARSER """
+    """ Test endpoint used to force request data from parser """
     queryset = Load.objects.all()
     permission_classes = [IsAdminUser]
     serializer_class = LoadSerializer

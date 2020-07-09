@@ -16,7 +16,6 @@ class RatesHistoryListView(GenericAPIView):
     serializer_class = RatesHistorySerializer
 
     def get(self, request):
-        indexation_es_rateshistory.delay()  # to be removed - task moved to celery beat
 
         queryset = RatesHistory.objects.all()
         serializer = RatesPredictionSerializer(queryset, many=True)

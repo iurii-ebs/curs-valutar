@@ -5,6 +5,7 @@ from celery import shared_task
 from django.conf import settings
 from rest_framework import status
 
+from apps.statistics.tasks import indexation_es_rateshistory
 from .models import Bank, Coin, Rate
 
 
@@ -120,6 +121,8 @@ def create_rates(date):
     detail['Bank']['skipped'] = count - detail['Bank']['created']
     detail['Coin']['skipped'] = count - detail['Coin']['created']
     detail['Rate']['skipped'] = count - detail['Rate']['created']
+
+    indexation_es_rateshistory.delay()
 
     return {
         'ok': True,

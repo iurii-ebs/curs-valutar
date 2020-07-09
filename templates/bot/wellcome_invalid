@@ -1,0 +1,3 @@
+Your activation link is invalid.
+Please follow this link to make another one
+https://{{ domain }}{% url 'telegram-register' %}

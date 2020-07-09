@@ -248,6 +248,6 @@ ELASTIC = {
 # Telegram bot settings
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 BOT_NAME = 'curs_valutar_bot'
-BOT_HOST = '27ea7d79a048.ngrok.io'
+BOT_HOST = '11ec20bb9a2e.ngrok.io'
 BOT_BASE = f"https://{BOT_HOST}/"
 BOT_PATH = f"tgbot/{BOT_NAME}/"

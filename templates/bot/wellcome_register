@@ -1,0 +1,12 @@
+Hi master!!!
+This bot is used to notify CursValutar users
+about actual currency values.
+
+If you doesn't have an account,
+you can make one by following this link.
+https://{{ domain }}{% url 'user_register' %}
+
+If you already have an account
+and want to receive notifications using Telegram,
+please follow this link.
+https://{{ domain }}{% url 'telegram-register' %}
