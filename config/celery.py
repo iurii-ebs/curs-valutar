@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import os
-
+from django.conf import settings
 from celery import Celery
 from celery.schedules import crontab
 
@@ -18,19 +18,20 @@ def debug_task(self):
     print('Request: {0!r}'.format(self.request))
 
 
-app.conf.timezone = 'Europe/Moscow'
+app.conf.timezone = settings.TIME_ZONE
 
 app.conf.beat_schedule = {
-    'rate-prediction-daily-9-AM': {
+    'rate-prediction-daily': {
         'task': 'update_rate_prediction',
-        'schedule': crontab(minute="0", hour="9"),
+        'schedule': crontab(minute="50", hour="8"),
         'args': (7,)
     },
-}
-
-app.conf.beat_schedule = {
     'elasticsearch-indexation-rates_history': {
         'task': 'indexation_es_rateshistory',
-        'schedule': crontab(minute="1", hour="9")
+        'schedule': crontab(minute="55", hour="8")
+    },
+    'elasticsearch-indexation_es_ratesprediction': {
+        'task': 'indexation_es_ratesprediction',
+        'schedule': crontab(minute="55", hour="8")
     },
 }
