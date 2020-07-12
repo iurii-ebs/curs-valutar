@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'apps.banks',
     'apps.tgbot',
     'apps.statistics',
-
+    'apps.reports',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -222,7 +222,7 @@ USE_TZ = True
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "/var/www/static"
+STATIC_ROOT = "/var/www/curs-valutar/static"
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
@@ -249,6 +249,15 @@ ELASTIC = {
 # Telegram bot settings
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 BOT_NAME = 'curs_valutar_bot'
-BOT_HOST = '27ea7d79a048.ngrok.io'
+BOT_HOST = 'eccc99f22995.ngrok.io'
 BOT_BASE = f"https://{BOT_HOST}/"
 BOT_PATH = f"tgbot/{BOT_NAME}/"
+
+WKHTMLTOPDF_CMD_OPTIONS = {
+    'quiet': False,
+}
+
+if os.name != 'nt':
+    WKHTMLTOPDF_CMD = '/usr/local/bin/wkhtmltopdf'
+else:
+    WKHTMLTOPDF_DEBUG = True
