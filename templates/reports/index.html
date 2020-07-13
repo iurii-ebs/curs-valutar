@@ -16,15 +16,16 @@
 <title>Report</title>
 
 <body>
+<h1>Price forecast </h1>
 {% load static %}
 <div class="container">
     <div class="item-1">
-<img src="{% static "graphs/"|add:currency_id|add:"/past.png" %}" alt="Graph" />
+<img src="{% static "graphs/"|add:currency_id|add:"_past.png" %}" alt="Graph" />
     </div>
     <div class="item-2">
-<img src="{% static "graphs/"|add:currency_id|add:"/future.png" %}" alt="Graph" />
+<img src="{% static "graphs/"|add:currency_id|add:"_future.png" %}" alt="Graph" />
     </div>
 </div>
-<img src="{% static "graphs/"|add:currency_id|add:"/past_future.png" %}" alt="Graph" />
+<img src="{% static "graphs/"|add:currency_id|add:"_past_future.png" %}" alt="Graph" />
 </body>
 </html>

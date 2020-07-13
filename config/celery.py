@@ -34,4 +34,8 @@ app.conf.beat_schedule = {
         'task': 'indexation_es_ratesprediction',
         'schedule': crontab(minute="55", hour="8")
     },
+    'gen-static-graphs-all': {
+        'task': 'gen_static_graphs_all',
+        'schedule': crontab(minute="55", hour="8")
+    },
 }
