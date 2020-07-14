@@ -19,7 +19,7 @@ class Currency(models.Model):
     abbr = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'Bank: {self.bank}, {self.abbr}'
+        return f'{self.id}, Bank: {self.bank}, {self.abbr}'
 
 
 class RatesHistory(models.Model):

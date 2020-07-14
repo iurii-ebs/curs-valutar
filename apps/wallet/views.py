@@ -61,6 +61,44 @@ class WalletTransactionsView(generics.GenericAPIView):
     serializer_class = WalletOperationSerializer
 
     def get(self, request, pk):
+        """
+        @api {get} /wallets/:id/transactions/ Get Wallets TransactionHistory
+        @apiName GetTransactionHistory
+        @apiGroup Wallets
+        @apiDescription Get transaction history from the user wallet
+
+        @apiHeader {String} Content-Type=application/json
+        @apiHeader {String} Authorization="Bearer <JWT token>"
+        @apiParam {Number} amount Transaction amount (can be negative).
+        @apiParam {Number} currency Currency id to transfer.
+
+        @apiSuccess {JSON} object containing status as success and object message
+        @apiError {JSON} object containing status as failed and error message
+
+        @apiSuccessExample Success Response (Example):
+        {
+            "id": 11,
+            "wallet": {
+                "id": 1,
+                "user": 1,
+                "currency": 1,
+                "balance": 228309,
+                "value_buy": 4085856.9,
+                "value_sell": 4018238.4,
+                "profit": -67618.5
+            },
+            "amount": 1111,
+            "currency": 1,
+            "rate": 7
+        }
+
+        @apiErrorExample Error Response (Example):
+        {
+        "detail": "The target wallet is not of the same currency. Please use a different wallet."
+        }
+
+        @apiSampleRequest http://127.0.0.1:8000/wallets/1/transactions/
+        """
         queryset = Wallet.objects.get(user=request.user, id=pk).operationitem.all()
         serializer = WalletOperationSerializer(queryset, many=True)
         return Response(serializer.data)

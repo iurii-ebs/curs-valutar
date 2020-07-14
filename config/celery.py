@@ -23,7 +23,7 @@ app.conf.timezone = settings.TIME_ZONE
 app.conf.beat_schedule = {
     'rate-prediction-daily': {
         'task': 'update_rate_prediction',
-        'schedule': crontab(minute="50", hour="8"),
+        'schedule': crontab(minute="48", hour="17"),
         'args': (7,)
     },
     'elasticsearch-indexation-rates_history': {
@@ -32,6 +32,10 @@ app.conf.beat_schedule = {
     },
     'elasticsearch-indexation_es_ratesprediction': {
         'task': 'indexation_es_ratesprediction',
+        'schedule': crontab(minute="55", hour="8")
+    },
+    'gen-static-graphs-all': {
+        'task': 'gen_static_graphs_all',
         'schedule': crontab(minute="55", hour="8")
     },
 }
