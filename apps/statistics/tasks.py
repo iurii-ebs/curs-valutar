@@ -3,7 +3,7 @@ import datetime
 
 from apps.wallet.models import Currency, RatesHistory
 
-from apps.statistics.models import RatesPrediction
+from apps.statistics.models import RatesPrediction, RatesPredictionText
 from apps.wallet.models import Wallet
 from notifications.signals import notify
 
@@ -15,6 +15,7 @@ from config.elastic import es
 @shared_task(name='update_rate_prediction')
 def update_rate_prediction(days_to_predict):
     RatesPrediction.objects.all().delete()                                                           # Clear old predicted rates to update based on new actual rate today
+    RatesPredictionText.objects.all().delete()
     currency_items = [currency_item.id for currency_item in Currency.objects.all()]                  # Make an array of currency IDs currently present in Currency table
     for currency_id in currency_items:                                                               # For each currency ID get its sell history and create an array. Example: [17.2, 17.3, 17.4 ...] and send this data to model_predict_linear() plus how many days to predict
         rates_sequence = [past_rate.rate_sell for past_rate in RatesHistory.objects.filter(currency=currency_id).order_by('date')]
@@ -84,6 +85,10 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
     notification_verb = f'{currency.name} from {currency.bank} is expected to {"fall" if percentage_growth < 0 else "rise"} by {abs(expected_rate_growth):.2f}¢ ({percentage_growth:.2f}% {"DOWN" if percentage_growth < 0 else "UP"}), for the next {days_predicted} days from {rate_today:.3f} to {rate_end:.3f}'
     wallets = Wallet.objects.all()
     for wallet in wallets:
+        RatesPredictionText.objects.create(
+            currency=currency,
+            message=notification_verb,
+        )
         if wallet.currency.id == currency.id:
             notify.send(wallet.user, recipient=wallet.user, verb=notification_verb)
 

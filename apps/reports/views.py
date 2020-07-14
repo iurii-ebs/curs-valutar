@@ -1,13 +1,15 @@
-from django.shortcuts import render
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from wkhtmltopdf.views import PDFTemplateResponse
-
-from apps.reports.tasks import gen_static_graphs_all
+import datetime
+from django.conf import settings
+import os
+from apps.reports.tasks import gen_static_graphs_all, save_pdf_report_files
 from apps.wallet.serializers import RatesHistorySerializer
+from apps.statistics.models import RatesPredictionText
 
 
 class PDFReportView(GenericAPIView):
@@ -17,11 +19,19 @@ class PDFReportView(GenericAPIView):
     context = {}
 
     def get(self, request, pk):
-        self.context['currency_id'] = str(pk)
+        forecast = RatesPredictionText.objects.get(currency_id=pk)
+        filename = f"currency_id_{forecast.currency.id}_{forecast.currency.abbr}_{forecast.currency.name}_{forecast.currency.bank}.pdf".lower().replace(" ", "_")
+        filepath = f"{settings.STATIC_ROOT}/pdf/"
+        save_pdf_report_files(filepath, filename)
+
+        self.context['context'] = {"currency_id": str(pk),
+                                   "period": f"{datetime.date.today()} / \
+                                   {datetime.date.today() + datetime.timedelta(7)}",
+                                   "forecast": forecast.message}
 
         response = PDFTemplateResponse(request=request,
                                        template=self.template,
-                                       filename=f"currency_id_{pk}.pdf",
+                                       filename=filename,
                                        context=self.context,
                                        show_content_in_browser=True,
                                        cmd_options={'enable-local-file-access': True}

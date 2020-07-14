@@ -6,6 +6,7 @@ from apps.statistics.models import RatesPrediction
 
 from celery import shared_task
 
+from weasyprint import HTML
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
@@ -115,3 +116,7 @@ def gen_pdf_graph_past_future(x, y, min_Y, max_Y, currency, workdir, price_today
     plt.ylim(min_Y, max_Y)
     plt.title(f"{currency.bank} {currency.abbr} - History and Predicted")
     plt.savefig(f"{workdir}/{currency.id}_past_future.png")
+
+
+def save_pdf_report_files(filepath, filename):
+    HTML('http://google.com/').write_pdf(filepath + filename)
