@@ -257,7 +257,6 @@ WKHTMLTOPDF_CMD_OPTIONS = {
     'quiet': False,
 }
 
-if os.name != 'nt':
-    WKHTMLTOPDF_CMD = '/usr/local/bin/wkhtmltopdf'
-else:
-    WKHTMLTOPDF_DEBUG = True
+
+WKHTMLTOPDF_CMD = '/usr/local/bin/wkhtmltopdf'
+

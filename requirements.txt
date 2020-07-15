@@ -65,5 +65,4 @@ gunicorn==20.0.4
 django-wkhtmltopdf==3.3.0
 matplotlib~=3.2.2
 pdfkit~=0.6.1
-django-weasyprint==1.0.1
-WeasyPrint~=51
+wget~=3.2
