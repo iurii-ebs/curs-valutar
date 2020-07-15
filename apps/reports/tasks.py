@@ -3,7 +3,7 @@ from django.conf import settings
 from apps.wallet.models import Currency, RatesHistory
 
 from apps.statistics.models import RatesPrediction
-
+import wget
 from celery import shared_task
 
 from weasyprint import HTML
@@ -118,5 +118,7 @@ def gen_pdf_graph_past_future(x, y, min_Y, max_Y, currency, workdir, price_today
     plt.savefig(f"{workdir}/{currency.id}_past_future.png")
 
 
-def save_pdf_report_files(filepath, filename):
-    HTML('http://google.com/').write_pdf(filepath + filename)
+def save_pdf_report_files(pk, filepath, filename):
+    file_url = f'http://127.0.0.1:8015/reports/pdf/{pk}'
+    dest_file = filepath + filename
+    wget.download(file_url, dest_file)
