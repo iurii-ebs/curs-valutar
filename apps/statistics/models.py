@@ -19,3 +19,13 @@ class RatesPrediction(models.Model):
 
     def __str__(self):
         return f'{self.currency}, Rate sell: {self.rate_sell}, {self.date}'
+
+
+class RatesPredictionText(models.Model):
+    currency = models.ForeignKey(
+        Currency, on_delete=models.CASCADE
+    )
+    message = models.TextField()
+
+    def __str__(self):
+        return f'{self.currency_id} {self.currency} {self.message}'
