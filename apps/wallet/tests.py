@@ -92,23 +92,21 @@ class WalletTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.test_user1 = User.objects.get(email='testuser1@example.com')
+        self.client.force_authenticate(user=self.test_user1)
 
     """ Views tests """
 
     # def test_user_
 
     def test_wallet_list_view(self):
-        self.client.force_authenticate(user=self.test_user1)
         response = self.client.get(reverse('wallet_list'), )
         self.assertEqual(response.status_code, 200)
 
     def test_wallet_detail_view(self):
-        self.client.force_authenticate(user=self.test_user1)
         response = self.client.get(reverse('wallet_detail', args=[1]), )
         self.assertEqual(response.status_code, 200)
 
     def test_wallet_transactions_view(self):
-        self.client.force_authenticate(user=self.test_user1)
         response = self.client.get(reverse('wallet_transactions', args=[1]), )
         self.assertEqual(response.status_code, 200)
 
@@ -121,6 +119,5 @@ class WalletTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_predict_days_view(self):
-        self.client.force_authenticate(user=self.test_user1)
         response = self.client.post(reverse('prediction_days', args=[3]))
         self.assertEqual(response.status_code, 200)

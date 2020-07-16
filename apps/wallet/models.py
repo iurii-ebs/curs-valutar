@@ -19,7 +19,7 @@ class Currency(models.Model):
     abbr = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'Bank: {self.bank}, {self.abbr}'
+        return f'{self.id}, Bank: {self.bank}, {self.abbr}'
 
 
 class RatesHistory(models.Model):
@@ -29,6 +29,15 @@ class RatesHistory(models.Model):
     rate_sell = models.FloatField()
     rate_buy = models.FloatField()
     date = models.DateField(db_index=True)
+
+    def es_doc(self):
+        return {
+            "id": self.id,
+            "currency": self.currency_id,
+            "rate_sell": self.rate_sell,
+            "rate_buy": self.rate_buy,
+            "date": self.date
+        }
 
     def __str__(self):
         return f'{self.currency}, Rate Sell: {self.rate_sell} / Rate Buy: {self.rate_buy}, {self.date}'

@@ -25,6 +25,7 @@ urlpatterns = [
     path('tgbot/', include("apps.tgbot.urls")),
     path('wallets/', include("apps.wallet.urls")),
     path('statistics/', include("apps.statistics.urls")),
+    path('reports/', include("apps.reports.urls")),
     path('notifications/', include('notifications.urls', namespace='notifications')),
     path(settings.BOT_PATH, TelegramWebHookView.as_view(), name='telegram-webhook'),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
