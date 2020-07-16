@@ -38,4 +38,8 @@ app.conf.beat_schedule = {
         'task': 'gen_static_graphs_all',
         'schedule': crontab(minute="55", hour="8")
     },
+    'create_rates_daily': {
+        'task': 'create_rates',
+        'schedule': crontab(minute="40", hour="8")
+    }
 }

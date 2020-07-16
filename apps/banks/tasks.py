@@ -9,8 +9,7 @@ from apps.statistics.tasks import indexation_es_rateshistory
 from .models import Bank, Coin, Rate
 
 
-# TODO: Make an scheduled task
-@shared_task()
+@shared_task(name='create_rates')
 def create_rates(date):
     """ Authorize to BANK PARSER and request rates """
     # Request JWT authentication access token
