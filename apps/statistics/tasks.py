@@ -90,7 +90,7 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
             message=notification_verb,
         )
         if wallet.currency.id == currency.id:
-            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb)
+            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb, target=currency)
 
 
 @shared_task(name='indexation_es_rateshistory')
