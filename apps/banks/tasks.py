@@ -10,43 +10,13 @@ from apps.statistics.tasks import indexation_es_rateshistory
 from .models import Bank, Coin, Rate
 
 
-@shared_task(name='create_rates')
+@shared_task(name=datetime.datetime.today())
 def create_rates(date=None):
     """ Authorize to BANK PARSER and request rates """
-    # Request JWT authentication access token
-
-    if date is None:
-        date = datetime.datetime.today().strftime(settings.BANK_PARSER_DATE_FORMAT)
-
-    try:
-        token_request = requests.post(
-            url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/api/user/token/',
-            data={
-                'username': settings.BANK_PARSER_USERNAME,
-                'password': settings.BANK_PARSER_PASSWORD,
-            },
-            timeout=10,
-        )
-    except Exception as e:
-        return {
-            'ok': False,
-            'detail': f'Token request failed with exception {e}',
-        }
-
-    # Check token request status
-    if token_request.status_code != status.HTTP_200_OK:
-        return {
-            'ok': False,
-            'detail': f'Token request failed with status {token_request.status_code}',
-        }
-
     # Request rates JSON
     try:
         rates_request = requests.get(
             url=f'http://{settings.BANK_PARSER_HOST}:{settings.BANK_PARSER_PORT}/banks/get/all/?date={date}',
-            headers={
-                "Authorization": f'Bearer {token_request.json()["access"]}',
-            },
             timeout=60,
         )
     except Exception as e:
@@ -59,7 +29,7 @@ def create_rates(date=None):
     if rates_request.status_code != status.HTTP_200_OK:
         return {
             'ok': False,
-            'detail': f"Rates request failed with status {token_request.status_code}",
+            'detail': f"Rates request failed with status {rates_request.status_code}",
         }
 
     # Check if rates request response is JSON
@@ -126,9 +96,8 @@ def create_rates(date=None):
     detail['Coin']['skipped'] = count - detail['Coin']['created']
     detail['Rate']['skipped'] = count - detail['Rate']['created']
 
-    indexation_es_rateshistory.delay()
-
     return {
         'ok': True,
         'detail': detail,
     }
+
