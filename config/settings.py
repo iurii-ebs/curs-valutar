@@ -135,6 +135,11 @@ REST_FRAMEWORK = {
     ),
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=2),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7)
+}
+
 JWT_AUTH = {
     # how long the original token is valid for
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=2),
@@ -218,13 +223,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
+# NGINX - alias /var/path/to/basedir/static/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = "/var/www/curs-valutar/static"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Swagger
@@ -257,6 +261,4 @@ WKHTMLTOPDF_CMD_OPTIONS = {
     'quiet': False,
 }
 
-
 WKHTMLTOPDF_CMD = '/usr/local/bin/wkhtmltopdf'
-

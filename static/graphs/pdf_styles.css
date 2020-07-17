@@ -1,0 +1,22 @@
+h1 {
+    padding-top: 30px;
+    text-align: center;
+}
+
+p {
+    font-size: 22px;
+}
+
+.container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.item-1 {
+    width: 400px;
+    float: left;
+}
+
+.item-2 {
+    margin-left: 620px;
+}
