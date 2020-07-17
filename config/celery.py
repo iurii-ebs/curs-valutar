@@ -42,4 +42,9 @@ app.conf.beat_schedule = {
         'task': 'create_rates',
         'schedule': crontab(minute="40", hour="8")
     }
+    # ,
+    # 'mail_reports_daily': {
+    #     'task': 'send_email_reports',
+    #     'schedule': crontab(minute="05", hour="9")
+    # }
 }

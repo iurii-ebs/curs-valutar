@@ -1,5 +1,7 @@
 import datetime
 from django.conf import settings
+from notifications.models import Notification
+
 from apps.wallet.models import Currency, RatesHistory
 
 from apps.statistics.models import RatesPrediction
@@ -9,6 +11,9 @@ from celery import shared_task
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
+from django.core.mail import send_mail, EmailMessage
+import os
+from time import sleep
 
 
 @shared_task(name='gen_static_graphs_all')
@@ -118,7 +123,30 @@ def gen_pdf_graph_past_future(x, y, min_Y, max_Y, currency, workdir, price_today
     plt.savefig(f"{workdir}/{currency.id}_past_future.png")
 
 
+@shared_task(name='send_email_reports')
+def send_email_reports():
+    recipients = Notification.objects.filter(emailed=False)
+
+    for index, recipient in enumerate(recipients):
+        filename = f"currency_id_{recipient.target.id}_{recipient.target.abbr}_{recipient.target.name}_{recipient.target.bank}_{datetime.date.today()}.pdf".lower().replace(
+            " ", "_")
+        filepath = f"{settings.STATIC_ROOT}/pdf/"
+        check_pdf_available = os.path.isfile(filepath + filename)
+        if check_pdf_available:
+            mail_sender(recipient, recipient.target, recipient.verb, filepath + filename)
+        else:
+            save_pdf_report_files(recipient.target.id, filepath, filename)
+
+
+def mail_sender(recipient, currency, message, attachment):
+    mail = EmailMessage(f'{currency} report {datetime.date.today()}', message, 'from@curs-valutar.com',
+                        [recipient.recipient.email])
+    mail.attach_file(attachment)
+    mail.send()
+
+
 def save_pdf_report_files(pk, filepath, filename):
+    sleep(10)
     file_url = f'http://127.0.0.1:8015/reports/pdf/{pk}'
     dest_file = filepath + filename
     wget.download(file_url, dest_file)
