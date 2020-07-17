@@ -21,34 +21,34 @@ def debug_task(self):
 app.conf.timezone = settings.TIME_ZONE
 
 app.conf.beat_schedule = {
-    # 'create_rates_daily': {
-    #     'task': 'create_rates',
-    #     'schedule': crontab(minute="45", hour="8")
-    # },
+    'create_rates_daily': {
+        'task': 'create_rates',
+        'schedule': crontab(minute=40, hour=8)
+    },
 
     'rate-prediction-daily': {
         'task': 'update_rate_prediction',
-        'schedule': crontab(minute="48", hour="8"),
+        'schedule': crontab(minute=45, hour=8),
         'args': (7,)
     },
 
     'gen-static-graphs-all': {
         'task': 'gen_static_graphs_all',
-        'schedule': crontab(minute="52", hour="8")
+        'schedule': crontab(minute=50, hour=8)
     },
 
-    # 'mail_reports_daily': {
-    #     'task': 'send_email_reports',
-    #     'schedule': crontab(minute="55", hour="8")
-    # }
+    'mail_reports_daily': {
+        'task': 'send_email_reports',
+        'schedule': crontab(minute=0, hour=[9, 10, 11, 12])
+    },
 
     'elasticsearch-indexation-rates_history': {
         'task': 'indexation_es_rateshistory',
-        'schedule': crontab(minute="55", hour="8")
+        'schedule': crontab(minute=55, hour=8)
     },
 
     'elasticsearch-indexation_es_ratesprediction': {
         'task': 'indexation_es_ratesprediction',
-        'schedule': crontab(minute="55", hour="8")
+        'schedule': crontab(minute=55, hour=8)
     },
 }

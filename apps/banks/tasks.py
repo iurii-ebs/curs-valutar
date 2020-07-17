@@ -5,13 +5,11 @@ import datetime
 from celery import shared_task
 from django.conf import settings
 from rest_framework import status
-
-from apps.statistics.tasks import indexation_es_rateshistory
 from .models import Bank, Coin, Rate
 
 
-@shared_task(name=datetime.datetime.today())
-def create_rates(date=None):
+@shared_task(name="create_rates")
+def create_rates(date=datetime.datetime.today()):
     """ Authorize to BANK PARSER and request rates """
     # Request rates JSON
     try:
