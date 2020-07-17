@@ -13,7 +13,6 @@ import matplotlib.lines as mlines
 import numpy as np
 from django.core.mail import EmailMessage
 import os
-from django.http import HttpResponse
 from django.template.loader import get_template
 import pdfkit
 
@@ -136,6 +135,8 @@ def send_email_reports():
         check_pdf_available = os.path.isfile(filepath + filename)
         if check_pdf_available:
             mail_sender(recipient, recipient.target, recipient.verb, filepath + filename)
+            recipient.emailed = True
+            recipient.save()
         else:
             save_pdf_report_files(recipient.target.id, filepath, filename)
 
