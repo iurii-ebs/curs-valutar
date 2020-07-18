@@ -129,8 +129,8 @@ def send_email_reports():
     recipients = Notification.objects.filter(emailed=False)
 
     for index, recipient in enumerate(recipients):
-        filename = f"currency_id_{recipient.target.id}_{recipient.target.abbr}_{recipient.target.name}_{recipient.target.bank}_{datetime.date.today()}.pdf".lower().replace(
-            " ", "_")
+        filename = f"currency_id_{recipient.target.id}_{recipient.target.abbr}_{recipient.target.name}_\
+{recipient.target.bank}_{datetime.date.today()}.pdf".lower().replace(" ", "_")
         filepath = f"{settings.STATIC_ROOT}/pdf/"
         check_pdf_available = os.path.isfile(filepath + filename)
         if check_pdf_available:
