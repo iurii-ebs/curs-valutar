@@ -1,18 +1,9 @@
-FROM ubuntu:20.04
+FROM python:3.8
 ARG DEBIAN_FRONTEND=noninteractive
-ENV DISPLAY=:0
 
 # Install missing libs
 RUN apt-get update && apt-get install -y apt-transport-https
 RUN apt-get install -y curl wget git
-
-# Install Python 3.8
-RUN apt-get install -y python3
-RUN apt-get install -y python3-pip
-RUN apt-get install -y python3-testresources
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
-RUN pip install --upgrade setuptools
 
 # Install wkhtmltopdf
 RUN apt-get install -f -y xvfb libfontconfig wkhtmltopdf
