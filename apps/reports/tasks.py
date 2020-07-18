@@ -5,15 +5,16 @@ from notifications.models import Notification
 from apps.wallet.models import Currency, RatesHistory
 
 from apps.statistics.models import RatesPrediction
-import wget
+from apps.statistics.models import RatesPredictionText
 from celery import shared_task
 
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import numpy as np
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
 import os
-from time import sleep
+from django.template.loader import get_template
+import pdfkit
 
 
 @shared_task(name='gen_static_graphs_all')
@@ -128,12 +129,14 @@ def send_email_reports():
     recipients = Notification.objects.filter(emailed=False)
 
     for index, recipient in enumerate(recipients):
-        filename = f"currency_id_{recipient.target.id}_{recipient.target.abbr}_{recipient.target.name}_{recipient.target.bank}_{datetime.date.today()}.pdf".lower().replace(
-            " ", "_")
+        filename = f"currency_id_{recipient.target.id}_{recipient.target.abbr}_{recipient.target.name}_\
+{recipient.target.bank}_{datetime.date.today()}.pdf".lower().replace(" ", "_")
         filepath = f"{settings.STATIC_ROOT}/pdf/"
         check_pdf_available = os.path.isfile(filepath + filename)
         if check_pdf_available:
             mail_sender(recipient, recipient.target, recipient.verb, filepath + filename)
+            recipient.emailed = True
+            recipient.save()
         else:
             save_pdf_report_files(recipient.target.id, filepath, filename)
 
@@ -146,7 +149,20 @@ def mail_sender(recipient, currency, message, attachment):
 
 
 def save_pdf_report_files(pk, filepath, filename):
-    sleep(10)
-    file_url = f'http://127.0.0.1:8015/reports/pdf/{pk}'
-    dest_file = filepath + filename
-    wget.download(file_url, dest_file)
+    forecast = RatesPredictionText.objects.get(currency_id=pk)
+    fake_static = f"{settings.STATIC_ROOT}graphs/"
+
+    context = {"currency_id": fake_static + str(pk),
+               "period": f"{datetime.date.today()} / \
+                               {datetime.date.today() + datetime.timedelta(7)}",
+               "forecast": forecast.message,
+               "fake_static": fake_static}
+    template = get_template('reports/index.html')
+    html = template.render(context)
+    options = {
+        'page-size': 'Letter',
+        'encoding': "UTF-8",
+        'enable-local-file-access': ""
+    }
+
+    pdfkit.from_string(html, filepath + filename, options)
