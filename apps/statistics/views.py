@@ -7,8 +7,59 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from apps.statistics.serializers import RatesPredictionSerializer
 from apps.statistics.tasks import update_rate_prediction
 from apps.wallet.serializers import RatesHistorySerializer
-from config.elastic import es
-from config.elastic import get_source
+from config.elastic import es, get_queryset_source
+
+
+class RatesLiveListView(GenericAPIView):
+    queryset = ''
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (AllowAny,)
+    serializer_class = RatesHistorySerializer
+
+    def get(self, request):
+        body = {
+            "size": 10,
+            "query": {
+                "match_all": {}
+            },
+            "collapse": {
+                "field": "currency",
+                "inner_hits": {
+                    "_source": {
+                        "includes": []
+                    },
+                    "name": "currency",
+                    "size": 1
+                }
+            }
+        }
+        es_queryset = es.search(index="curs-valutar-rateshistory",
+                                body=body
+                                )
+        es_queryset = get_queryset_source(es_queryset)
+        return Response(es_queryset)
+
+
+class RatesLiveDetailView(GenericAPIView):
+    queryset = ''
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (AllowAny,)
+    serializer_class = RatesPredictionSerializer
+
+    def get(self, request, pk):
+        body = {
+            "size": 1,
+            "query": {
+                "match": {
+                    "currency": pk
+                }
+            },
+        }
+        es_queryset = es.search(index="curs-valutar-rateshistory",
+                                body=body,
+                                )
+        es_queryset = get_queryset_source(es_queryset)
+        return Response(es_queryset)
 
 
 class RatesHistoryListView(GenericAPIView):
@@ -27,7 +78,7 @@ class RatesHistoryListView(GenericAPIView):
         es_queryset = es.search(index="curs-valutar-rateshistory",
                                 body=body
                                 )
-        es_queryset = get_source(es_queryset)
+        es_queryset = get_queryset_source(es_queryset)
         return Response(es_queryset)
 
 
@@ -35,7 +86,7 @@ class RatesHistoryDetailView(GenericAPIView):
     queryset = ''
     authentication_classes = (JWTAuthentication,)
     permission_classes = (AllowAny,)
-    serializer_class = RatesPredictionSerializer
+    serializer_class = RatesHistorySerializer
 
     def get(self, request, pk):
         body = {
@@ -47,7 +98,7 @@ class RatesHistoryDetailView(GenericAPIView):
         es_queryset = es.search(index="curs-valutar-rateshistory",
                                 body=body
                                 )
-        es_queryset = get_source(es_queryset)
+        es_queryset = get_queryset_source(es_queryset)
         return Response(es_queryset)
 
 
@@ -67,7 +118,7 @@ class PredictListView(GenericAPIView):
         es_queryset = es.search(index="curs-valutar-ratesprediction",
                                 body=body
                                 )
-        es_queryset = get_source(es_queryset)
+        es_queryset = get_queryset_source(es_queryset)
         return Response(es_queryset)
 
 
@@ -87,7 +138,7 @@ class PredictDetailView(GenericAPIView):
         es_queryset = es.search(index="curs-valutar-ratesprediction",
                                 body=body
                                 )
-        es_queryset = get_source(es_queryset)
+        es_queryset = get_queryset_source(es_queryset)
         return Response(es_queryset)
 
 
