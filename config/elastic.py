@@ -1,11 +1,9 @@
-from drf_util.elastic import ElasticUtil
 from django.conf import settings
+from elasticsearch import Elasticsearch
+
+es = Elasticsearch(hosts=settings.ELASTIC['hosts'], timeout=50)
 
 
-class Elastic(ElasticUtil):
-    hosts = settings.ELASTIC['hosts']
-    index_prefix = settings.ELASTIC['index_prefix']
-    activity_index = 'elastic_test'
-
-
-es = Elastic()
+def get_source(es_queryset):
+    source = [hit['_source'] for hit in es_queryset['hits']['hits']]
+    return source

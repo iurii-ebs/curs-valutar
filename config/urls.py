@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.permissions import AllowAny
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from apps.tgbot.views import TelegramWebHookView
+from rest_framework.permissions import AllowAny
 
+from apps.tgbot.views import TelegramWebHookView
 
 schema_view = get_schema_view(
     openapi.Info(

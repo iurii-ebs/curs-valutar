@@ -1,16 +1,18 @@
-from rest_framework.permissions import AllowAny
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
-from rest_framework import status
 import datetime
+
+import pdfkit
 from django.conf import settings
-from apps.reports.tasks import gen_static_graphs_all
-from apps.wallet.serializers import RatesHistorySerializer
-from apps.statistics.models import RatesPredictionText
 from django.http import HttpResponse
 from django.template.loader import get_template
-import pdfkit
+from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from apps.reports.tasks import gen_static_graphs_all
+from apps.statistics.models import RatesPredictionText
+from apps.wallet.serializers import RatesHistorySerializer
 
 
 class GenPDFGraphs(GenericAPIView):
