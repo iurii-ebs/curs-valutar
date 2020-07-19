@@ -3,8 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.generics import GenericAPIView
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from apps.statistics.models import RatesPrediction
-from apps.statistics.tasks import update_rate_prediction, indexation_es_rateshistory
+from apps.statistics.tasks import update_rate_prediction
 from apps.statistics.serializers import RatesPredictionSerializer
 from apps.wallet.serializers import RatesHistorySerializer
 from config.elastic import es
@@ -21,6 +20,27 @@ class RatesHistoryListView(GenericAPIView):
             "size": 10000,
             "query": {
                 "match_all": {},
+            },
+        }
+        es_queryset = es.search(index="rates-history",
+                                doc_type="curs-valutar",
+                                body=body
+                                )
+        es_queryset = [es.get_source(history_item) for history_item in es_queryset[0]]
+        return Response(es_queryset)
+
+
+class RatesHistoryDetailView(GenericAPIView):
+    queryset = ''
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (AllowAny,)
+    serializer_class = RatesPredictionSerializer
+
+    def get(self, request, pk):
+        body = {
+            "size": 10000,
+            "query": {
+                "term": {"currency": pk}
             },
         }
         es_queryset = es.search(index="rates-history",
