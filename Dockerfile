@@ -1,13 +1,15 @@
 FROM python:3.8
-ARG DEBIAN_FRONTEND=noninteractive
 
 # Install missing libs
 RUN apt-get update && apt-get install -y apt-transport-https
 RUN apt-get install -y curl wget git
 
 # Install wkhtmltopdf
-RUN apt-get install -f -y xvfb libfontconfig wkhtmltopdf
+RUN apt-get install -f -y xvfb libfontconfig xfonts-75dpi wkhtmltopdf
 RUN ln -s /usr/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
+RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb
+RUN dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb
+RUN apt-get -f -y install
 
 # Creating Application Source Code Directory
 RUN mkdir -p /usr/app
@@ -21,4 +23,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn
 
 # Exposing Ports
-EXPOSE 8000 8014 8015
+EXPOSE 5432 8000 8014 8015 8016 8017
