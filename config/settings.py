@@ -50,12 +50,12 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # Local
-    'apps.wallet',
-    'apps.users',
-    'apps.banks',
-    'apps.tgbot',
-    'apps.statistics',
-    'apps.reports',
+    'apps.wallet.apps.WalletConfig',
+    'apps.users.apps.UsersConfig',
+    'apps.banks.apps.BanksConfig',
+    'apps.tgbot.apps.TgbotConfig',
+    'apps.statistics.apps.StatisticsConfig',
+    'apps.reports.apps.ReportsConfig',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
