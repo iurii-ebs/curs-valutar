@@ -2,4 +2,8 @@ from django.apps import AppConfig
 
 
 class StatisticsConfig(AppConfig):
-    name = 'statistics'
+    name = 'apps.statistics'
+    verbose_name = 'Statistics'
+
+    def ready(self):
+        import apps.statistics.signals

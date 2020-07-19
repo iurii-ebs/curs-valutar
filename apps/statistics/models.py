@@ -1,4 +1,5 @@
 from django.db import models
+
 from apps.wallet.models import Currency
 
 
@@ -18,7 +19,7 @@ class RatesPrediction(models.Model):
         }
 
     def __str__(self):
-        return f'{self.currency}, Rate sell: {self.rate_sell}, {self.date}'
+        return f'id {self.id}, currency {self.currency}, Rate sell: {self.rate_sell}, {self.date}'
 
 
 class RatesPredictionText(models.Model):
