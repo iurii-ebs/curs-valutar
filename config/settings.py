@@ -248,7 +248,6 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
 ELASTIC = {
     'hosts': 'es-internship.devebs.net',
-    'index_prefix': 'curs-valutar'
 }
 
 # Telegram bot settings

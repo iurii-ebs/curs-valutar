@@ -8,6 +8,7 @@ from apps.statistics.serializers import RatesPredictionSerializer
 from apps.statistics.tasks import update_rate_prediction
 from apps.wallet.serializers import RatesHistorySerializer
 from config.elastic import es
+from config.elastic import get_source
 
 
 class RatesHistoryListView(GenericAPIView):
@@ -23,11 +24,10 @@ class RatesHistoryListView(GenericAPIView):
                 "match_all": {},
             },
         }
-        es_queryset = es.search(index="rates-history",
-                                doc_type="curs-valutar",
+        es_queryset = es.search(index="curs-valutar-rateshistory",
                                 body=body
                                 )
-        es_queryset = [es.get_source(history_item) for history_item in es_queryset[0]]
+        es_queryset = get_source(es_queryset)
         return Response(es_queryset)
 
 
@@ -44,12 +44,11 @@ class RatesHistoryDetailView(GenericAPIView):
                 "term": {"currency": pk}
             },
         }
-        es_queryset = es.search(index="rates-history",
-                                doc_type="curs-valutar",
+        es_queryset = es.search(index="curs-valutar-rateshistory",
                                 body=body
                                 )
-        source = [es.get_source(history_item) for history_item in es_queryset[0]]
-        return Response(source)
+        es_queryset = get_source(es_queryset)
+        return Response(es_queryset)
 
 
 class PredictListView(GenericAPIView):
@@ -65,12 +64,11 @@ class PredictListView(GenericAPIView):
                 "match_all": {},
             },
         }
-        es_queryset = es.search(index="rates-prediction",
-                                doc_type="curs-valutar",
+        es_queryset = es.search(index="curs-valutar-ratesprediction",
                                 body=body
                                 )
-        source = [es.get_source(predict_item) for predict_item in es_queryset[0]]
-        return Response(source)
+        es_queryset = get_source(es_queryset)
+        return Response(es_queryset)
 
 
 class PredictDetailView(GenericAPIView):
@@ -86,12 +84,11 @@ class PredictDetailView(GenericAPIView):
                 "term": {"currency": pk}
             },
         }
-        es_queryset = es.search(index="rates-prediction",
-                                doc_type="curs-valutar",
+        es_queryset = es.search(index="curs-valutar-ratesprediction",
                                 body=body
                                 )
-        source = [es.get_source(predict_item) for predict_item in es_queryset[0]]
-        return Response(source)
+        es_queryset = get_source(es_queryset)
+        return Response(es_queryset)
 
 
 class PredictionDaysDetailView(GenericAPIView):
