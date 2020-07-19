@@ -1,5 +1,5 @@
-from drf_util.elastic import ElasticUtil
 from django.conf import settings
+from drf_util.elastic import ElasticUtil
 
 
 class Elastic(ElasticUtil):

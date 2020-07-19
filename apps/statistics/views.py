@@ -1,10 +1,11 @@
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework.generics import GenericAPIView
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from apps.statistics.tasks import update_rate_prediction
+
 from apps.statistics.serializers import RatesPredictionSerializer
+from apps.statistics.tasks import update_rate_prediction
 from apps.wallet.serializers import RatesHistorySerializer
 from config.elastic import es
 

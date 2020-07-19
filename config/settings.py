@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os
 import datetime
+import os
+
 from dotenv import load_dotenv
 
 # SECURITY WARNING: don't run with debug turned on in production!

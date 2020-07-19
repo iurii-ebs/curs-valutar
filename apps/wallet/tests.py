@@ -1,8 +1,9 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
 from datetime import date as datecreated
-from rest_framework.test import APIClient
+
+from django.contrib.auth.models import User
+from django.test import TestCase
 from rest_framework.reverse import reverse
+from rest_framework.test import APIClient
 
 from apps.wallet.models import (Currency,
                                 Bank,

@@ -1,15 +1,15 @@
+import datetime
+
+from django.shortcuts import get_list_or_404
+from rest_framework import generics, permissions
 from rest_framework import status
 from rest_framework.response import Response
-from django.shortcuts import get_list_or_404
 from rest_framework_simplejwt.authentication import JWTAuthentication
-import datetime
-from rest_framework import generics, permissions
-from apps.wallet.permissions import IsWalletOwner, IsSameCurrencyTransaction, IsZeroBalance
 
 from apps.wallet.models import (RatesHistory,
                                 Wallet,
                                 WalletOperation)
-
+from apps.wallet.permissions import IsWalletOwner, IsSameCurrencyTransaction, IsZeroBalance
 from apps.wallet.serializers import (WalletSerializer,
                                      WalletSerializerCreate,
                                      WalletOperationSerializer,

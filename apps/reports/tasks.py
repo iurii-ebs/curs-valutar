@@ -1,20 +1,19 @@
 import datetime
-from django.conf import settings
-from notifications.models import Notification
+import os
 
-from apps.wallet.models import Currency, RatesHistory
+import matplotlib.lines as mlines
+import matplotlib.pyplot as plt
+import numpy as np
+import pdfkit
+from celery import shared_task
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.template.loader import get_template
+from notifications.models import Notification
 
 from apps.statistics.models import RatesPrediction
 from apps.statistics.models import RatesPredictionText
-from celery import shared_task
-
-import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
-import numpy as np
-from django.core.mail import EmailMessage
-import os
-from django.template.loader import get_template
-import pdfkit
+from apps.wallet.models import Currency, RatesHistory
 
 
 @shared_task(name='gen_static_graphs_all')

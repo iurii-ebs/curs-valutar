@@ -1,8 +1,10 @@
 from __future__ import absolute_import, unicode_literals
+
 import os
-from django.conf import settings
+
 from celery import Celery
 from celery.schedules import crontab
+from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
@@ -40,15 +42,5 @@ app.conf.beat_schedule = {
     'mail_reports_daily': {
         'task': 'send_email_reports',
         'schedule': crontab(minute=0, hour=[9, 10, 11, 12], day_of_week='1-5')
-    },
-
-    'elasticsearch-indexation-rates_history': {
-        'task': 'indexation_es_rateshistory',
-        'schedule': crontab(minute=55, hour=8, day_of_week='1-5')
-    },
-
-    'elasticsearch-indexation_es_ratesprediction': {
-        'task': 'indexation_es_ratesprediction',
-        'schedule': crontab(minute=55, hour=8, day_of_week='1-5')
     },
 }

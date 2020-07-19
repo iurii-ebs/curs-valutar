@@ -1,11 +1,10 @@
 from rest_framework import serializers
 
+from apps.users.serializers import UserSerializer
 from apps.wallet.models import (Currency,
                                 RatesHistory,
                                 Wallet,
                                 WalletOperation)
-
-from apps.users.serializers import UserSerializer
 
 
 class CurrencySerializer(serializers.ModelSerializer):

@@ -1,8 +1,10 @@
 from rest_framework import permissions
+
 from apps.wallet.models import Wallet
 from apps.wallet.serializers import WalletSerializer
 
 SAFE_METHODS = ["GET"]
+
 
 class IsWalletOwner(permissions.BasePermission):
     message = "You are not the wallet owner. Permission denied"
