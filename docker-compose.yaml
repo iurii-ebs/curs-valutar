@@ -4,7 +4,10 @@ services:
   web:
     build: .
     restart: always
-    command: gunicorn -w 5 -b 0.0.0.0:8015 config.wsgi
+    command: gunicorn -w 3 -b 0.0.0.0:8015 config.wsgi
+    networks:
+      docker_network_custom:
+        ipv4_address: 172.19.1.1
     volumes:
       - .:/usr/app/
     ports:
@@ -13,11 +16,24 @@ services:
     build: .
     restart: always
     command: celery -A config worker --loglevel=INFO --concurrency=10 -n worker_dokr
+    networks:
+      docker_network_custom:
+        ipv4_address: 172.19.1.2
     volumes:
       - .:/usr/app/
   celery-beat:
     build: .
     restart: always
     command: celery -A config beat --loglevel=INFO
+    networks:
+      docker_network_custom:
+        ipv4_address: 172.19.1.3
     volumes:
       - .:/usr/app/
+
+networks:
+  docker_network_custom:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/16
