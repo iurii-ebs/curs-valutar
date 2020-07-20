@@ -8,6 +8,11 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+static/admin/
+static/drf-yasg/
+static/doc/
+static/notifications/
+static/rest_framework/
 build/
 develop-eggs/
 dist/
