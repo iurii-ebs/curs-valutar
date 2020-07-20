@@ -8,6 +8,9 @@ urlpatterns = [
     path('coin/', CoinViewSet.as_view(actions={'get': 'list'}), name='coin-list'),
     path('rate/', RateViewSet.as_view(actions={'get': 'list'}), name='rate-list'),
 
+    path('coin/detail/<int:pk>/', CoinViewSet.as_view(actions={'get': 'retrieve'}), name='coin_detail'),
+    path('bank/detail/<int:pk>/', BankViewSet.as_view(actions={'get': 'retrieve'}), name='coin_detail'),
+
     path('coin/<int:bank_id>/',
          CoinViewSet.as_view(actions={'get': 'list_coins_of_bank'}),
          name='coins_of_bank'),
