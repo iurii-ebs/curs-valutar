@@ -6,7 +6,7 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 
 from .models import Bank, Coin, Rate, Load
 from .permissions import IsStaffOrReadOnly
@@ -62,14 +62,14 @@ class LoadViewSet(ListModelMixin, GenericViewSet):
         })
 
 
-class BankViewSet(ListModelMixin, GenericViewSet):
+class BankViewSet(ReadOnlyModelViewSet):
     queryset = Bank.objects.all()
     permission_classes = [IsStaffOrReadOnly]
     serializer_class = BankSerializer
     pagination_class = DefaultPagination
 
 
-class CoinViewSet(ListModelMixin, GenericViewSet):
+class CoinViewSet(ReadOnlyModelViewSet):
     queryset = Coin.objects.all()
     permission_classes = [IsStaffOrReadOnly]
     serializer_class = CoinSerializer
