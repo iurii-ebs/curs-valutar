@@ -4,7 +4,8 @@ from rest_framework.decorators import action
 from rest_framework.generics import QuerySet
 from rest_framework.mixins import ListModelMixin
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 
@@ -45,7 +46,8 @@ class DefaultPagination(PageNumberPagination):
 class LoadViewSet(ListModelMixin, GenericViewSet):
     """ Test endpoint used to force request data from parser """
     queryset = Load.objects.all()
-    permission_classes = [IsAdminUser]
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (AllowAny,)
     serializer_class = LoadSerializer
 
     def create(self, request):
