@@ -22,5 +22,8 @@ COPY . /usr/app
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
 # Exposing Ports
 EXPOSE 5432 8000 8014 8015 8016 8017
