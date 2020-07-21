@@ -26,8 +26,9 @@ def gen_static_graphs_all():
 def gen_single_graphs(currency_id, currency):
     workdir = str(settings.STATIC_ROOT) + "/graphs"
     queryset_h = RatesHistory.objects.filter(currency_id=currency_id, date__lte=datetime.datetime.today(),
-                                             date__gt=datetime.datetime.today() - datetime.timedelta(days=7))
-    queryset_p = RatesPrediction.objects.filter(currency_id=currency_id)
+                                             date__gt=datetime.datetime.today() - datetime.timedelta(days=7)).order_by(
+        'date')
+    queryset_p = RatesPrediction.objects.filter(currency_id=currency_id).order_by('date')
 
     data_historyX = [f"{rate.date}" for rate in queryset_h]
     data_historyY = [rate.rate_sell for rate in queryset_h]
@@ -61,6 +62,7 @@ def gen_pdf_graph_past(x, y, min_Y, max_Y, currency, workdir):
     plt.ylim(min_Y, max_Y)
     plt.title(f"{currency.bank} {currency.abbr} - History")
     plt.savefig(f"{workdir}/{currency.id}_past.png")
+    plt.close(fig=None)
 
 
 def gen_pdf_graph_future(x, y, min_Y, max_Y, currency, workdir):
@@ -121,6 +123,7 @@ def gen_pdf_graph_past_future(x, y, min_Y, max_Y, currency, workdir, price_today
     plt.ylim(min_Y, max_Y)
     plt.title(f"{currency.bank} {currency.abbr} - History and Predicted")
     plt.savefig(f"{workdir}/{currency.id}_past_future.png")
+    plt.close(fig=None)
 
 
 @shared_task(name='send_email_reports')
@@ -148,7 +151,7 @@ def mail_sender(recipient, currency, message, attachment):
 
 
 def save_pdf_report_files(pk, filepath, filename):
-    forecast = RatesPredictionText.objects.get(currency_id=pk)
+    forecast = RatesPredictionText.objects.filter(currency_id=pk)[0]
     fake_static = f"{settings.STATIC_ROOT}graphs/"
 
     context = {"currency_id": fake_static + str(pk),

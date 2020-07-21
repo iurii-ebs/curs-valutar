@@ -3,7 +3,7 @@ from django.dispatch import receiver
 
 from apps.statistics.models import RatesPrediction
 from config.elastic import es
-
+import elasticsearch
 
 @receiver(post_save, sender=RatesPrediction)
 def update_es_prediction_record(sender, instance, **kwargs):
@@ -17,7 +17,11 @@ def update_es_prediction_record(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=RatesPrediction)
 def delete_es_prediction_record(sender, instance, *args, **kwargs):
-    es.delete(
-        index='curs-valutar-ratesprediction',
-        id=instance.id
-    )
+    try:
+        es.delete(
+            index='curs-valutar-ratesprediction',
+            id=instance.id
+        )
+    except elasticsearch.NotFoundError as es_not_found:
+        print('NotFoundError, please check logs:', instance.id, es_not_found)
+        pass

@@ -18,6 +18,10 @@ class RatesLiveListView(GenericAPIView):
 
     def get(self, request):
         body = {
+            "sort": [
+                {"date": "desc"},
+                "_score"
+            ],
             "size": 10,
             "query": {
                 "match_all": {}
@@ -48,6 +52,10 @@ class RatesLiveDetailView(GenericAPIView):
 
     def get(self, request, pk):
         body = {
+            "sort": [
+                {"date": "desc"},
+                "_score"
+            ],
             "size": 1,
             "query": {
                 "match": {
@@ -70,6 +78,10 @@ class RatesHistoryListView(GenericAPIView):
 
     def get(self, request):
         body = {
+            "sort": [
+                {"date": "desc"},
+                "_score"
+            ],
             "size": 10000,
             "query": {
                 "match_all": {},
@@ -90,6 +102,10 @@ class RatesHistoryDetailView(GenericAPIView):
 
     def get(self, request, pk):
         body = {
+            "sort": [
+                {"date": "desc"},
+                "_score"
+            ],
             "size": 10000,
             "query": {
                 "term": {"currency": pk}
@@ -110,6 +126,10 @@ class PredictListView(GenericAPIView):
 
     def get(self, request):
         body = {
+            "sort": [
+                {"date": "desc"},
+                "_score"
+            ],
             "size": 10000,
             "query": {
                 "match_all": {},
@@ -130,6 +150,10 @@ class PredictDetailView(GenericAPIView):
 
     def get(self, request, pk):
         body = {
+            "sort": [
+                {"date": "desc"},
+                "_score"
+            ],
             "size": 10000,
             "query": {
                 "term": {"currency": pk}
