@@ -40,12 +40,12 @@ class WalletSerializer(serializers.ModelSerializer):
     def get_balance(self, obj):
         queryset = Wallet.objects.get(user=obj.user, id=obj.id).operationitem.all()
         transactions_sum = sum([i.amount for i in queryset])
-        return transactions_sum
+        return float(0.00) if transactions_sum == 0.0 else transactions_sum
 
     def get_value_buy(self, obj):
         queryset = Wallet.objects.get(user=obj.user, id=obj.id).operationitem.all()
         value_day_bought = sum([(i.rate.rate_buy * i.amount) for i in queryset])
-        return value_day_bought
+        return float(0.00) if value_day_bought == 0.0 else value_day_bought
 
     def get_value_sell(self, obj):
         queryset = Wallet.objects.get(user=obj.user, id=obj.id).operationitem.all()
@@ -53,12 +53,13 @@ class WalletSerializer(serializers.ModelSerializer):
         rates_currency_bought = RatesHistory.objects.filter(currency=currency_bought).order_by('date')
         currency_rate_today = [i.rate_sell for i in rates_currency_bought][-1:][0]
         value_today = sum([(currency_rate_today * i.amount) for i in queryset])
-        return value_today
+        return float(0.00) if value_today == 0.0 else value_today
 
     def get_profit(self, obj):
         value_buy = self.get_value_buy(obj)
         value_sell = self.get_value_sell(obj)
-        return value_sell - value_buy
+        profit = value_sell - value_buy
+        return float(0.00) if profit == 0.0 else profit
 
 
 class WalletSerializerCreate(serializers.ModelSerializer):
