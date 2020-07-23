@@ -25,8 +25,8 @@ def gen_static_graphs_all():
 
 def gen_single_graphs(currency_id, currency):
     workdir = str(settings.STATIC_ROOT) + "/graphs"
-    queryset_h = RatesHistory.objects.filter(currency_id=currency_id, date__lte=datetime.datetime.today(),
-                                             date__gt=datetime.datetime.today() - datetime.timedelta(days=7)).order_by(
+    queryset_h = RatesHistory.objects.filter(currency_id=currency_id, date__lte=datetime.datetime.today().date(),
+                                             date__gt=datetime.datetime.today().date() - datetime.timedelta(days=7)).order_by(
         'date')
     queryset_p = RatesPrediction.objects.filter(currency_id=currency_id).order_by('date')
 

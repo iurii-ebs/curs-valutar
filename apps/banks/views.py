@@ -99,7 +99,7 @@ class RateViewSet(ListModelMixin, GenericViewSet):
     @paginate
     @action(methods=['GET'], detail=False)
     def list_rates_of_coin_from(self, request, coin_id, days=7):
-        date_to = datetime.today()
+        date_to = datetime.today().date()
         date_from = date_to - timedelta(days=days)
         queryset = self.get_queryset().filter(currency__id=coin_id, date__range=[date_from, date_to])
         return queryset
