@@ -4,6 +4,8 @@ services:
   web:
     build: .
     restart: always
+    environment:
+      TZ: "Europe/Istanbul"
     command: gunicorn -w 3 -b 0.0.0.0:8015 config.wsgi
     networks:
       docker_network_custom:
@@ -15,6 +17,8 @@ services:
   celery:
     build: .
     restart: always
+    environment:
+      TZ: "Europe/Istanbul"
     command: celery -A config worker --loglevel=INFO --concurrency=10 -n worker_dokr
     networks:
       docker_network_custom:
@@ -24,6 +28,8 @@ services:
   celery-beat:
     build: .
     restart: always
+    environment:
+      TZ: "Europe/Istanbul"
     command: celery -A config beat --loglevel=INFO
     networks:
       docker_network_custom:

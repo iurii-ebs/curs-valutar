@@ -214,7 +214,7 @@ BANK_PARSER_SCHEMA = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Istanbul'
+TIME_ZONE = "Europe/Istanbul"
 
 USE_I18N = True
 
