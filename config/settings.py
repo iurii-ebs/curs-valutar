@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'apps.wallet.apps.WalletConfig',
     'apps.users.apps.UsersConfig',
     'apps.banks.apps.BanksConfig',
-    'apps.tgbot.apps.TgbotConfig',
     'apps.statistics.apps.StatisticsConfig',
     'apps.reports.apps.ReportsConfig',
 ]
@@ -249,13 +248,6 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 ELASTIC = {
     'hosts': 'es-internship.devebs.net',
 }
-
-# Telegram bot settings
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-BOT_NAME = 'curs_valutar_bot'
-BOT_HOST = '57ee6aaf5b1c.ngrok.io'
-BOT_BASE = f"https://{BOT_HOST}/"
-BOT_PATH = f"tgbot/{BOT_NAME}/"
 
 WKHTMLTOPDF_CMD_OPTIONS = {
     'quiet': False,
