@@ -1,0 +1,49 @@
+
+server {
+
+    server_name www.live.curs-valutar.xyz live.curs-valutar.xyz;
+
+    charset     utf-8;
+
+
+    client_max_body_size 75M;
+
+    location /static {
+        expires 365d;
+        alias /var/www/curs-valutar-api/curs-valutar/static/;
+    }
+
+    location / {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    if (!-f $request_filename) {
+            proxy_pass http://127.0.0.1:8015;
+            break;
+        }
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/www.live.curs-valutar.xyz/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/www.live.curs-valutar.xyz/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+server {
+    if ($host = live.curs-valutar.xyz) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = www.live.curs-valutar.xyz) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen      80;
+
+    server_name www.live.curs-valutar.xyz live.curs-valutar.xyz;
+    return 404; # managed by Certbot
