@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.conf import settings
 
 
 class WalletConfig(AppConfig):
@@ -6,4 +7,5 @@ class WalletConfig(AppConfig):
     verbose_name = 'Wallet'
 
     def ready(self):
-        import apps.wallet.signals
+        if settings.ELASTICSEARCHENABLED:
+            import apps.wallet.signals

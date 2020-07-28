@@ -254,3 +254,5 @@ WKHTMLTOPDF_CMD_OPTIONS = {
 }
 
 WKHTMLTOPDF_CMD = '/usr/local/bin/wkhtmltopdf'
+
+ELASTICSEARCHENABLED = False

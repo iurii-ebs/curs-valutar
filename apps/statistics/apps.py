@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.conf import settings
 
 
 class StatisticsConfig(AppConfig):
@@ -6,4 +7,5 @@ class StatisticsConfig(AppConfig):
     verbose_name = 'Statistics'
 
     def ready(self):
-        import apps.statistics.signals
+        if settings.ELASTICSEARCHENABLED:
+            import apps.statistics.signals
