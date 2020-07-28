@@ -8,6 +8,7 @@ re_uid = r'(?P<uid_encoded>[0-9A-Za-z_\-]+)/'
 re_token = r'(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/'
 
 urlpatterns = [
+    re_path(r'profile/', views.ProfileView.as_view(), name='user_profile'),
     re_path(r'register/', views.RegisterView.as_view(), name='user_register'),
     re_path(r'register-done/', views.RegisterDoneView.as_view(), name='user_register_done'),
     re_path(r'activate/' + re_uid + re_token, views.ActivateView.as_view(), name='user_activate'),
