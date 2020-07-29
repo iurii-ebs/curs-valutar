@@ -5,6 +5,7 @@ import os
 from celery import Celery
 from celery.schedules import crontab
 from django.conf import settings
+import datetime
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
@@ -25,7 +26,8 @@ app.conf.timezone = settings.TIME_ZONE
 app.conf.beat_schedule = {
     'create_rates_daily': {
         'task': 'create_rates',
-        'schedule': crontab(minute=40, hour=9, day_of_week='1-5')
+        'schedule': crontab(minute=40, hour=9, day_of_week='1-5'),
+        'args': (str(datetime.datetime.today().date()),)
     },
 
     'rate-prediction-daily': {
@@ -41,6 +43,6 @@ app.conf.beat_schedule = {
 
     'mail_reports_daily': {
         'task': 'send_email_reports',
-        'schedule': crontab(minute=0, hour=[10, 11, 12], day_of_week='1-5')
+        'schedule': crontab(minute=0, hour=[10, 11], day_of_week='1-5')
     },
 }

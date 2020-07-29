@@ -9,7 +9,7 @@ from .models import Bank, Coin, Rate
 
 
 @shared_task(name="create_rates")
-def create_rates(date=str(datetime.datetime.today().date())):
+def create_rates(date):
     """ Authorize to BANK PARSER and request rates """
     # Request rates JSON
     try:
