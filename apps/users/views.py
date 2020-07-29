@@ -5,12 +5,20 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.users import serializers
 from apps.users import tokens
 from .tasks import email_account_activation, email_password_reset
+
+
+class ProfileView(GenericAPIView):
+    serializers_class = serializers.UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(self.serializers_class(request.user).data)
 
 
 class RegisterView(GenericAPIView):
