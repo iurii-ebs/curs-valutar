@@ -25,9 +25,8 @@ app.conf.timezone = settings.TIME_ZONE
 
 app.conf.beat_schedule = {
     'create_rates_daily': {
-        'task': 'create_rates',
-        'schedule': crontab(minute=40, hour=9, day_of_week='1-5'),
-        'args': (str(datetime.datetime.today().date()),)
+        'task': 'pricetaker_on',
+        'schedule': crontab(minute=30, hour=9, day_of_week='1-5'),
     },
 
     'rate-prediction-daily': {

@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'apps.banks.apps.BanksConfig',
     'apps.statistics.apps.StatisticsConfig',
     'apps.reports.apps.ReportsConfig',
+    'apps.pricetaker.apps.PricetakerConfig',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
