@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       TZ: "Europe/Istanbul"
-    command: gunicorn -w 3 -b 0.0.0.0:8015 config.wsgi
+    command: python manage.py runserver 0.0.0.0:8015
     networks:
       docker_network_custom:
         ipv4_address: 172.19.1.1
@@ -19,7 +19,7 @@ services:
     restart: always
     environment:
       TZ: "Europe/Istanbul"
-    command: celery -A config worker --loglevel=INFO --concurrency=10 -n worker_dokr
+    command: celery -A config worker --loglevel=INFO --concurrency=10 -n worker_dokr2
     networks:
       docker_network_custom:
         ipv4_address: 172.19.1.2
