@@ -65,3 +65,4 @@ gunicorn==20.0.4
 matplotlib~=3.3.0
 pdfkit~=0.6.1
 wget~=3.2
+pandas~=1.1.0

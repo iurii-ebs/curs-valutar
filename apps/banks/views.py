@@ -12,7 +12,7 @@ from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 from .models import Bank, Coin, Rate, Load
 from .permissions import IsStaffOrReadOnly
 from .serializers import BankSerializer, CoinSerializer, RateSerializer, LoadSerializer
-from .tasks import create_rates
+from apps.pricetaker.tasks import pricetaker_on
 
 
 def paginate(func):
@@ -56,7 +56,7 @@ class LoadViewSet(ListModelMixin, GenericViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors)
 
-        create_rates.delay(date=str(serializer.validated_data['date']))
+        pricetaker_on.delay(date=str(serializer.validated_data['date']))
 
         return Response({
             'ok': True,
