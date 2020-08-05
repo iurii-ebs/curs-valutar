@@ -9,7 +9,8 @@ data_workdir = str(settings.STATIC_ROOT) + "csv"
 
 
 @shared_task(name='pricetaker_on')
-def pricetaker_on(date):
+def pricetaker_on(date=str(datetime.datetime.today().date())):
+    print(date)  # temporary debug
     get_currency_csv(datetime.datetime.strptime(str(date), '%Y-%m-%d').date())
 
 
