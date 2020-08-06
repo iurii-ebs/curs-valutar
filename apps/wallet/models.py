@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+from apps.commons.models import BaseModel
 
 
-class Bank(models.Model):
+class Bank(BaseModel):
     registered_name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=50)
     website = models.CharField(max_length=50, default='')
@@ -11,7 +12,7 @@ class Bank(models.Model):
         return f'{self.registered_name}'
 
 
-class Currency(models.Model):
+class Currency(BaseModel):
     bank = models.ForeignKey(
         Bank, related_name='rateprovider', default=1, blank=True, on_delete=models.CASCADE
     )
@@ -22,7 +23,7 @@ class Currency(models.Model):
         return f'{self.id}, Bank: {self.bank}, {self.abbr}'
 
 
-class RatesHistory(models.Model):
+class RatesHistory(BaseModel):
     currency = models.ForeignKey(
         Currency, related_name='currencyitem', on_delete=models.CASCADE
     )
@@ -43,7 +44,7 @@ class RatesHistory(models.Model):
         return f'{self.currency}, Rate Sell: {self.rate_sell} / Rate Buy: {self.rate_buy}, {self.date}'
 
 
-class Wallet(models.Model):
+class Wallet(BaseModel):
     user = models.ForeignKey(
         User, related_name='walletitem', on_delete=models.CASCADE
     )
@@ -55,7 +56,7 @@ class Wallet(models.Model):
         return f'User: {self.user}, Currency: {self.currency}'
 
 
-class WalletOperation(models.Model):
+class WalletOperation(BaseModel):
     wallet = models.ForeignKey(
         Wallet, related_name='operationitem', on_delete=models.CASCADE
     )

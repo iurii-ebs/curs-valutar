@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # Local
+    'apps.commons.apps.CommonsConfig',
     'apps.wallet.apps.WalletConfig',
     'apps.users.apps.UsersConfig',
     'apps.banks.apps.BanksConfig',
@@ -218,6 +219,8 @@ BANK_PARSER_SCHEMA = {
         "date": {"type": "string"},
     },
 }
+
+HOST_URL = os.getenv('HOST_URL')
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
