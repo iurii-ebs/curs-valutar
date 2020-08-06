@@ -227,7 +227,7 @@ HOST_URL = os.getenv('HOST_URL')
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = "Europe/Istanbul"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
