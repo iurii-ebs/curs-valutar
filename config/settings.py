@@ -219,6 +219,8 @@ BANK_PARSER_SCHEMA = {
     },
 }
 
+HOST_URL = os.getenv('HOST_URL')
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 

@@ -4,13 +4,17 @@ from apps.wallet.models import Bank, Currency, RatesHistory
 from django.conf import settings
 import pandas as pd
 import datetime
+import requests
 
-data_workdir = str(settings.STATIC_ROOT) + "csv"
+
+@shared_task(name='pricetaker_trigger')
+def pricetaker_trigger():
+    data = {"date": f"{datetime.datetime.today().date()}"}
+    requests.post(settings.HOST_URL + "banks/load/", json=data)
 
 
 @shared_task(name='pricetaker_on')
-def pricetaker_on(date=str(datetime.datetime.today().date())):
-    print(date)  # temporary debug
+def pricetaker_on(date):
     get_currency_csv(datetime.datetime.strptime(str(date), '%Y-%m-%d').date())
 
 
@@ -20,7 +24,10 @@ def get_currency_csv(date):
         source_get = f"{source.data_source}&date_end={str(date.strftime('%d.%m.%Y'))}&date_start={str(date.strftime('%d.%m.%Y'))}&bank={source.short_name}"
         data = pd.read_csv(source_get, sep=";")
         data.drop(columns=['Date'], inplace=True)
-        currency_to_db(bank=source, data=data, date=date)
+        if len(data.columns) > 0:
+            currency_to_db(bank=source, data=data, date=date)
+        else:
+            print('Bank', source.short_name, 'is not yet updated, try later!')
 
 
 def currency_to_db(bank, data, date):
