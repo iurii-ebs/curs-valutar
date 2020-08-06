@@ -1,7 +1,8 @@
 from django.db import models
+from apps.commons.models import BaseModel
 
 
-class Pricetaker(models.Model):
+class Pricetaker(BaseModel):
     registered_name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=50)
     data_source = models.CharField(max_length=500, default='')

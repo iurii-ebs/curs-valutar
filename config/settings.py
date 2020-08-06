@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # Local
+    'apps.commons.apps.CommonsConfig',
     'apps.wallet.apps.WalletConfig',
     'apps.users.apps.UsersConfig',
     'apps.banks.apps.BanksConfig',

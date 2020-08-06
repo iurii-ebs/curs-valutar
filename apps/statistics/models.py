@@ -1,9 +1,10 @@
 from django.db import models
 
 from apps.wallet.models import Currency
+from apps.commons.models import BaseModel
 
 
-class RatesPrediction(models.Model):
+class RatesPrediction(BaseModel):
     currency = models.ForeignKey(
         Currency, related_name='currencypredictions', on_delete=models.CASCADE
     )
@@ -19,10 +20,10 @@ class RatesPrediction(models.Model):
         }
 
     def __str__(self):
-        return f'id {self.id}, currency {self.currency}, Rate sell: {self.rate_sell}, {self.date}'
+        return f'ID {self.id}, Currency {self.currency}, Rate sell: {self.rate_sell}, {self.date}'
 
 
-class RatesPredictionText(models.Model):
+class RatesPredictionText(BaseModel):
     currency = models.ForeignKey(
         Currency, on_delete=models.CASCADE
     )
