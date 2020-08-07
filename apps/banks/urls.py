@@ -3,7 +3,7 @@ from django.urls import path
 from .views import BankViewSet, CoinViewSet, RateViewSet, LoadViewSet
 
 urlpatterns = [
-    path('load/', LoadViewSet.as_view(actions={'get': 'list', 'post': 'create'}), name='load_list'),
+    path('load/', LoadViewSet.as_view(actions={'post': 'create'}), name='load_list'),
     path('bank/', BankViewSet.as_view(actions={'get': 'list'}), name='bank-list'),
     path('coin/', CoinViewSet.as_view(actions={'get': 'list'}), name='coin-list'),
     path('rate/', RateViewSet.as_view(actions={'get': 'list'}), name='rate-list'),
