@@ -22,9 +22,9 @@ def get_currency_csv(date):
     pricetakers = Pricetaker.objects.all()
     for index, source in enumerate(pricetakers):
         source_get = f"{source.data_source}&date_end={str(date.strftime('%d.%m.%Y'))}&date_start={str(date.strftime('%d.%m.%Y'))}&bank={source.short_name}"
-        data = pd.read_csv(source_get, sep=";")
-        data.drop(columns=['Date'], inplace=True)
-        if len(data.columns) > 0:
+        data = pd.read_csv(source_get, sep=";", decimal=',')
+        data.drop(columns=['Data'], inplace=True)
+        if len(data.columns.tolist()) > 0:
             currency_to_db(bank=source, data=data, date=date)
         else:
             print('Bank', source.short_name, 'is not yet updated, try later!')

@@ -8,12 +8,16 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from apps.wallet.models import (RatesHistory,
                                 Wallet,
-                                WalletOperation)
+                                WalletOperation,
+                                Bank,
+                                Currency)
 from apps.wallet.permissions import IsWalletOwner, IsSameCurrencyTransaction, IsZeroBalance
 from apps.wallet.serializers import (WalletSerializer,
                                      WalletSerializerCreate,
                                      WalletOperationSerializer,
-                                     WalletOperationSerializerCreate)
+                                     WalletOperationSerializerCreate,
+                                     BankSelectionSerializer,
+                                     CurrencySelectionSerializer)
 
 
 class WalletListView(generics.GenericAPIView):
@@ -79,3 +83,25 @@ class WalletTransactionsView(generics.GenericAPIView):
             )
             return Response(WalletOperationSerializerCreate(wallets_transactions_new).data)
         return Response(serializer.errors)
+
+
+class SelectBankOptionsView(generics.GenericAPIView):
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = BankSelectionSerializer
+
+    def get(self, request):
+        queryset = Bank.objects.all()
+        serializer = BankSelectionSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class SelectCurrencyOptionsView(generics.GenericAPIView):
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = CurrencySelectionSerializer
+
+    def get(self, request, bank_id):
+        queryset = Currency.objects.filter(bank=bank_id)
+        serializer = CurrencySelectionSerializer(queryset, many=True)
+        return Response(serializer.data)
