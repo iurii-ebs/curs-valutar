@@ -17,7 +17,7 @@ class RatesLiveListView(GenericAPIView):
     serializer_class = RatesHistorySerializer
 
     def get(self, request):
-        queryset = RatesHistory.objects.order_by("currency_id", '-date').distinct("currency_id")
+        queryset = RatesHistory.objects.order_by("currency_id", 'date').reverse().distinct("currency_id")
         serializer = RatesHistorySerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -29,7 +29,7 @@ class RatesLiveDetailView(GenericAPIView):
     serializer_class = RatesHistorySerializer
 
     def get(self, request, pk):
-        queryset = RatesHistory.objects.filter(currency_id=pk).order_by('-date')[0]
+        queryset = RatesHistory.objects.filter(currency_id=pk).latest('date')
         serializer = RatesHistorySerializer(queryset)
         return Response(serializer.data)
 
@@ -42,7 +42,7 @@ class RatesHistoryListView(GenericAPIView):
 
     def get(self, request):
 
-        queryset = RatesHistory.objects.all().order_by('-date')
+        queryset = RatesHistory.objects.all().order_by('date').reverse()
         serializer = RatesHistorySerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -55,7 +55,7 @@ class RatesHistoryDetailView(GenericAPIView):
 
     def get(self, request, pk):
 
-        queryset = RatesHistory.objects.filter(currency=pk).order_by('-date')
+        queryset = RatesHistory.objects.filter(currency=pk).order_by('date').reverse()
         serializer = RatesHistorySerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -67,7 +67,7 @@ class PredictListView(GenericAPIView):
     serializer_class = RatesPredictionSerializer
 
     def get(self, request):
-        queryset = RatesPrediction.objects.all().order_by('-date')
+        queryset = RatesPrediction.objects.all().order_by('date').reverse()
         serializer = RatesPredictionSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -79,7 +79,7 @@ class PredictDetailView(GenericAPIView):
     serializer_class = RatesPredictionSerializer
 
     def get(self, request, pk):
-        queryset = RatesPrediction.objects.filter(currency=pk).order_by('-date')
+        queryset = RatesPrediction.objects.filter(currency=pk).order_by('date').reverse()
         serializer = RatesPredictionSerializer(queryset, many=True)
         return Response(serializer.data)
 

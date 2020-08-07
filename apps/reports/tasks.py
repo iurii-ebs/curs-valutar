@@ -150,7 +150,7 @@ def mail_sender(recipient, currency, message, attachment):
 
 
 def save_pdf_report_files(pk, filepath, filename):
-    forecast = RatesPredictionText.objects.filter(currency_id=pk).order_by('-date_created')[0]
+    forecast = RatesPredictionText.objects.filter(currency_id=pk).latest('date_created')
     fake_static = f"{settings.STATIC_ROOT}graphs/"
 
     context = {"currency_id": fake_static + str(pk),

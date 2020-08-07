@@ -10,6 +10,7 @@ RUN ln -s /usr/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
 RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb
 RUN dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb
 RUN apt-get -f -y install
+RUN apt-get autoremove
 
 # Creating Application Source Code Directory
 RUN mkdir -p /usr/app
@@ -26,4 +27,4 @@ RUN pip install gunicorn
 RUN python manage.py collectstatic --noinput
 
 # Exposing Ports
-EXPOSE 5432 8000 8014 8015 8016 8017
+EXPOSE 5432 8015
