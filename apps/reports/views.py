@@ -23,7 +23,7 @@ class GenPDFGraphs(GenericAPIView):
 
     def get(self, request):
         gen_static_graphs_all()
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)
 
 
 class PDFReportViewNew(GenericAPIView):
