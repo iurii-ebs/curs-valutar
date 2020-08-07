@@ -55,7 +55,7 @@ def currency_to_db(bank, data, date):
                 date=date,
             )
 
-        if 'buy' in col:
+        if 'cump' in col:
             RatesHistory.objects.filter(currency=currency, rate_sell=0, date=date).update(rate_sell=price)
-        if 'sell' in col:
+        if 'vanz' in col:
             RatesHistory.objects.filter(currency=currency, rate_buy=0, date=date).update(rate_buy=price)
