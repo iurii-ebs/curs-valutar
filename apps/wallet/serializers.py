@@ -1,10 +1,24 @@
 from rest_framework import serializers
 
 from apps.users.serializers import UserSerializer
-from apps.wallet.models import (Currency,
+from apps.wallet.models import (
+                                Bank,
+                                Currency,
                                 RatesHistory,
                                 Wallet,
                                 WalletOperation)
+
+
+class BankSelectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bank
+        fields = ['id', 'short_name', 'registered_name']
+
+
+class CurrencySelectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Currency
+        fields = ['id', 'abbr']
 
 
 class CurrencySerializer(serializers.ModelSerializer):

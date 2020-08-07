@@ -26,8 +26,8 @@ def gen_static_graphs_all():
 def gen_single_graphs(currency_id, currency):
     workdir = str(settings.STATIC_ROOT) + "/graphs"
     queryset_h = RatesHistory.objects.filter(currency_id=currency_id, date__lte=datetime.datetime.today().date(),
-                                             date__gt=datetime.datetime.today().date() - datetime.timedelta(days=7)).order_by('date')
-    queryset_p = RatesPrediction.objects.filter(currency_id=currency_id).order_by('date')
+                                             date__gt=datetime.datetime.today().date() - datetime.timedelta(days=7)).order_by('date_created')
+    queryset_p = RatesPrediction.objects.filter(currency_id=currency_id).order_by('date_created')
 
     data_historyX = [f"{rate.date}" for rate in queryset_h]
     data_historyY = [rate.rate_sell for rate in queryset_h]
@@ -150,7 +150,7 @@ def mail_sender(recipient, currency, message, attachment):
 
 
 def save_pdf_report_files(pk, filepath, filename):
-    forecast = RatesPredictionText.objects.filter(currency_id=pk).order_by('-date')[0]
+    forecast = RatesPredictionText.objects.filter(currency_id=pk).order_by('-date_created')[0]
     fake_static = f"{settings.STATIC_ROOT}graphs/"
 
     context = {"currency_id": fake_static + str(pk),
