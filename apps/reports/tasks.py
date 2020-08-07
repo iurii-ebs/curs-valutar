@@ -29,9 +29,9 @@ def gen_single_graphs(currency_id, currency):
                                              date__gt=datetime.datetime.today().date() - datetime.timedelta(days=7)).order_by('date_created')
     queryset_p = RatesPrediction.objects.filter(currency_id=currency_id).order_by('date_created')
 
-    data_historyX = [f"{rate.date}" for rate in queryset_h]
+    data_historyX = [rate.date.strftime('%Y.%m.%d') for rate in queryset_h]
     data_historyY = [rate.rate_sell for rate in queryset_h]
-    data_predictX = [f"{rate.date}" for rate in queryset_p]
+    data_predictX = [rate.date.strftime('%Y.%m.%d') for rate in queryset_p]
     data_predictY = [rate.rate_sell for rate in queryset_p]
     price_today = data_historyY[-1] if len(data_historyY) > 0 else 0
     max_Y = max(data_historyY + data_predictY) + (max(data_historyY + data_predictY) / 200)
@@ -150,7 +150,7 @@ def mail_sender(recipient, currency, message, attachment):
 
 
 def save_pdf_report_files(pk, filepath, filename):
-    forecast = RatesPredictionText.objects.filter(currency_id=pk).order_by('-date_created')[0]
+    forecast = RatesPredictionText.objects.filter(currency_id=pk).latest('date_created')
     fake_static = f"{settings.STATIC_ROOT}graphs/"
 
     context = {"currency_id": fake_static + str(pk),

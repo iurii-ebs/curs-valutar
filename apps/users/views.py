@@ -14,11 +14,11 @@ from .tasks import email_account_activation, email_password_reset
 
 
 class ProfileView(GenericAPIView):
-    serializers_class = serializers.UserSerializer
+    serializer_class = serializers.UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response(self.serializers_class(request.user).data)
+        return Response(self.serializer_class(request.user).data)
 
 
 class RegisterView(GenericAPIView):

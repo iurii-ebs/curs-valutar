@@ -1,6 +1,7 @@
 import datetime
 
 from django.shortcuts import get_list_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions
 from rest_framework import status
 from rest_framework.response import Response
@@ -17,7 +18,8 @@ from apps.wallet.serializers import (WalletSerializer,
                                      WalletOperationSerializer,
                                      WalletOperationSerializerCreate,
                                      BankSelectionSerializer,
-                                     CurrencySelectionSerializer)
+                                     CurrencySelectionSerializer,
+                                     WalletSerializerCreateSWAGGER)
 
 
 class WalletListView(generics.GenericAPIView):
@@ -30,6 +32,7 @@ class WalletListView(generics.GenericAPIView):
         serializer = WalletSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(request_body=WalletSerializerCreateSWAGGER)
     def post(self, request):
         serializer = WalletSerializerCreate(data=request.data)
         if serializer.is_valid():

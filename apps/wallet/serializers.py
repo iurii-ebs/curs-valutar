@@ -76,12 +76,20 @@ class WalletSerializer(serializers.ModelSerializer):
         return float(0.00) if profit == 0.0 else profit
 
 
-class WalletSerializerCreate(serializers.ModelSerializer):
-    user = UserSerializer(required=False)
-
+class WalletSerializerCreate(WalletSerializer):
     class Meta:
         model = Wallet
-        fields = '__all__'
+        fields = ['id', 'user', 'currency', 'balance', 'value_buy', 'value_sell', 'profit']
+
+    def __init__(self, *args, **kwargs):
+        super(WalletSerializerCreate, self).__init__(*args, **kwargs)
+        self.fields['user'].required = False
+
+
+class WalletSerializerCreateSWAGGER(serializers.ModelSerializer):
+    class Meta:
+        model = Wallet
+        fields = ['currency']
 
 
 class WalletOperationSerializer(serializers.ModelSerializer):

@@ -23,7 +23,7 @@ class GenPDFGraphs(GenericAPIView):
 
     def get(self, request):
         gen_static_graphs_all()
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)
 
 
 class PDFReportViewNew(GenericAPIView):
@@ -35,7 +35,7 @@ class PDFReportViewNew(GenericAPIView):
     serializer_class = RatesHistorySerializer
 
     def get(self, request, pk):
-        forecast = RatesPredictionText.objects.filter(currency_id=pk)[0]
+        forecast = RatesPredictionText.objects.filter(currency_id=pk).latest('date_created')
         filename = f"currency_id_{forecast.currency.id}_{forecast.currency.abbr}_{forecast.currency.name}_\
 {forecast.currency.bank}_{datetime.date.today()}.pdf".lower().replace(" ", "_")
         filepath = f"{settings.STATIC_ROOT}/pdf/"
