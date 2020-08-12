@@ -10,7 +10,7 @@ RUN ln -s /usr/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
 RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb
 RUN dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb
 RUN apt-get -f -y install
-RUN apt-get autoremove
+RUN apt-get -y autoremove
 
 # Creating Application Source Code Directory
 RUN mkdir -p /usr/app
@@ -20,6 +20,7 @@ WORKDIR /usr/app
 
 # Installing python dependencies
 COPY . /usr/app
+RUN python -m pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn
 

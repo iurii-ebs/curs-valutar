@@ -16,10 +16,11 @@ from apps.wallet.permissions import IsWalletOwner, IsSameCurrencyTransaction, Is
 from apps.wallet.serializers import (WalletSerializer,
                                      WalletSerializerCreate,
                                      WalletOperationSerializer,
-                                     WalletOperationSerializerCreate,
+                                     WalletOperationCreateSerializer,
                                      BankSelectionSerializer,
                                      CurrencySelectionSerializer,
-                                     WalletSerializerCreateSWAGGER)
+                                     WalletSerializerCreateSWAGGER,
+                                     WalletOperationCreateSWAGGER)
 
 
 class WalletListView(generics.GenericAPIView):
@@ -72,9 +73,10 @@ class WalletTransactionsView(generics.GenericAPIView):
         serializer = WalletOperationSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(request_body=WalletOperationCreateSWAGGER)
     def post(self, request, pk):
         queryset = Wallet.objects.get(id=pk)
-        serializer = WalletOperationSerializerCreate(data=request.data)
+        serializer = WalletOperationCreateSerializer(data=request.data)
         if serializer.is_valid():
             rate_today = RatesHistory.objects.filter(currency=serializer.validated_data['currency'].id,
                                                      date=datetime.date.today()).latest('id')
@@ -84,7 +86,7 @@ class WalletTransactionsView(generics.GenericAPIView):
                 rate=rate_today,
                 amount=serializer.validated_data['amount']
             )
-            return Response(WalletOperationSerializerCreate(wallets_transactions_new).data)
+            return Response(WalletOperationCreateSerializer(wallets_transactions_new).data)
         return Response(serializer.errors)
 
 

@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from apps.users.serializers import UserSerializer
 from apps.wallet.models import (
                                 Bank,
                                 Currency,
@@ -16,9 +15,11 @@ class BankSelectionSerializer(serializers.ModelSerializer):
 
 
 class CurrencySelectionSerializer(serializers.ModelSerializer):
+    bank = BankSelectionSerializer(required=False)
+
     class Meta:
         model = Currency
-        fields = ['id', 'abbr']
+        fields = ['id', 'abbr', 'bank']
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -28,6 +29,8 @@ class CurrencySerializer(serializers.ModelSerializer):
 
 
 class RatesHistorySerializer(serializers.ModelSerializer):
+    currency = CurrencySelectionSerializer(required=False)
+
     class Meta:
         model = RatesHistory
         fields = '__all__'
@@ -41,7 +44,7 @@ class CurrentRatesSerializer(serializers.ModelSerializer):
         fields = ['rate_sell', 'rate_buy', 'date', 'currency']
 
 
-class WalletSerializer(serializers.ModelSerializer):
+class WalletSerializerBase(serializers.ModelSerializer):
     balance = serializers.SerializerMethodField()
     value_buy = serializers.SerializerMethodField()
     value_sell = serializers.SerializerMethodField()
@@ -76,7 +79,15 @@ class WalletSerializer(serializers.ModelSerializer):
         return float(0.00) if profit == 0.0 else profit
 
 
-class WalletSerializerCreate(WalletSerializer):
+class WalletSerializer(WalletSerializerBase):
+    currency = CurrencySelectionSerializer(required=False)
+
+    class Meta:
+        model = Wallet
+        fields = ['id', 'user', 'currency', 'balance', 'value_buy', 'value_sell', 'profit']
+
+
+class WalletSerializerCreate(WalletSerializerBase):
     class Meta:
         model = Wallet
         fields = ['id', 'user', 'currency', 'balance', 'value_buy', 'value_sell', 'profit']
@@ -92,13 +103,21 @@ class WalletSerializerCreateSWAGGER(serializers.ModelSerializer):
         fields = ['currency']
 
 
+class WalletOperationCreateSWAGGER(serializers.ModelSerializer):
+    class Meta:
+        model = WalletOperation
+        fields = ['currency', 'amount']
+
+
 class WalletOperationSerializer(serializers.ModelSerializer):
+    currency = CurrencySelectionSerializer(required=False)
+
     class Meta:
         model = WalletOperation
         fields = '__all__'
 
 
-class WalletOperationSerializerCreate(serializers.ModelSerializer):
+class WalletOperationCreateSerializer(serializers.ModelSerializer):
     wallet = WalletSerializer(required=False)
 
     class Meta:
