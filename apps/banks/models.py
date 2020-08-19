@@ -6,5 +6,5 @@ from apps.wallet.models import Currency as Coin
 from apps.commons.models import BaseModel
 
 
-class Load(BaseModel):
+class Load(models.Model):
     date = models.DateField(blank=True)
