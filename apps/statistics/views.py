@@ -50,7 +50,7 @@ class RatesLiveDetailView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RatesPredictionSerializer
 
-    def get(self, request, pk):
+    def get(self, request, currency_id):
         body = {
             "sort": [
                 {"date": "desc"},
@@ -59,7 +59,7 @@ class RatesLiveDetailView(GenericAPIView):
             "size": 1,
             "query": {
                 "match": {
-                    "currency": pk
+                    "currency": currency_id
                 }
             },
         }

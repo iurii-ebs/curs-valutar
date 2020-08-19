@@ -142,7 +142,7 @@ def send_email_reports():
             save_pdf_report_files(recipient.target.id, filepath, filename)
 
 
-def mail_sender(recipient, currency, message, attachment):
+def mail_sender(recipient, currency, message, attachment=None):
     mail = EmailMessage(f'{currency} report {datetime.date.today()}', message, 'from@curs-valutar.com',
                         [recipient.recipient.email])
     mail.attach_file(attachment)

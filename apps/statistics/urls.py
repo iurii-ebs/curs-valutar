@@ -9,6 +9,7 @@ urlpatterns = [
     path('history/', views.RatesHistoryListView.as_view() if settings.ELASTICSEARCHENABLED else noes_views.RatesHistoryListView.as_view(), name='history_list'),
     path('history/<int:pk>/', views.RatesHistoryDetailView.as_view() if settings.ELASTICSEARCHENABLED else noes_views.RatesHistoryDetailView.as_view(), name='history_detail'),
     path('live/', views.RatesLiveListView.as_view() if settings.ELASTICSEARCHENABLED else noes_views.RatesLiveListView.as_view(), name='live_list'),
-    path('live/<int:pk>/', views.RatesLiveDetailView.as_view() if settings.ELASTICSEARCHENABLED else noes_views.RatesLiveDetailView.as_view(), name='live_detail'),
+    path('live/<int:currency_id>/', views.RatesLiveDetailView.as_view() if settings.ELASTICSEARCHENABLED else noes_views.RatesLiveDetailView.as_view(), name='live_detail'),
+    path('live/bank/<int:bank_id>/', noes_views.RatesLiveBankView.as_view(), name='live_bank'),
     path('predict/<int:pk>/days/', views.PredictionDaysDetailView.as_view() if settings.ELASTICSEARCHENABLED else views.PredictionDaysDetailView.as_view(), name='prediction_days'),
 ]

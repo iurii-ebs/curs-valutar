@@ -28,9 +28,21 @@ class RatesLiveDetailView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RatesHistorySerializer
 
-    def get(self, request, pk):
-        queryset = RatesHistory.objects.filter(currency_id=pk).latest('date')
+    def get(self, request, currency_id):
+        queryset = RatesHistory.objects.filter(currency_id=currency_id).latest('date')
         serializer = RatesHistorySerializer(queryset)
+        return Response(serializer.data)
+
+
+class RatesLiveBankView(GenericAPIView):
+    queryset = ''
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (AllowAny,)
+    serializer_class = RatesHistorySerializer
+
+    def get(self, request, bank_id):
+        queryset = RatesHistory.objects.filter(currency__bank_id=bank_id).order_by("currency_id", 'date').reverse().distinct("currency_id")
+        serializer = RatesHistorySerializer(queryset, many=True)
         return Response(serializer.data)
 
 
