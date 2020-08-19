@@ -11,7 +11,7 @@ from apps.wallet.models import (
 class BankSelectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bank
-        fields = ['id', 'short_name', 'registered_name']
+        fields = ['id', 'short_name', 'registered_name', 'logo_path']
 
 
 class CurrencySelectionSerializer(serializers.ModelSerializer):
