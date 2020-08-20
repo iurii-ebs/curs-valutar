@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'apps.statistics.apps.StatisticsConfig',
     'apps.reports.apps.ReportsConfig',
     'apps.pricetaker.apps.PricetakerConfig',
+    'apps.notification.apps.NotificationConfig',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
