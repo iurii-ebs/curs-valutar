@@ -6,8 +6,8 @@ from apps.commons.models import BaseModel
 class Bank(BaseModel):
     registered_name = models.CharField(max_length=50)
     short_name = models.CharField(max_length=50)
-    website = models.CharField(max_length=50, default='')
-    logo_path = models.CharField(max_length=50, default='')
+    website = models.CharField(max_length=50, blank=True)
+    logo_path = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return f'{self.registered_name}'
