@@ -7,6 +7,7 @@ from sklearn.linear_model import LinearRegression
 from apps.statistics.models import RatesPrediction, RatesPredictionText
 from apps.wallet.models import Currency, RatesHistory
 from apps.wallet.models import Wallet
+from apps.notification.models import CustomContentType
 
 
 @shared_task(name='update_rate_prediction')
@@ -94,4 +95,9 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
             message=notification_verb,
         )
         if wallet.currency.id == currency.id:
-            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb, target=currency)
+            notify.send(wallet.user,
+                        recipient=wallet.user,
+                        action_object_content_type=CustomContentType,
+                        action_object_object_id=1,
+                        verb=notification_verb,
+                        target=currency)
