@@ -1,5 +1,5 @@
 from celery import shared_task
-from apps.pricetaker.models import Pricetaker
+from apps.pricesource.models import Pricesource
 from apps.wallet.models import Bank, Currency, RatesHistory
 from django.conf import settings
 import pandas as pd
@@ -7,20 +7,20 @@ import datetime
 import requests
 
 
-@shared_task(name='pricetaker_trigger')
-def pricetaker_trigger():
+@shared_task(name='pricesource_trigger')
+def pricesource_trigger():
     data = {"date": f"{datetime.datetime.today().date()}"}
     requests.post(settings.HOST_URL + "banks/load/", json=data)
 
 
-@shared_task(name='pricetaker_on')
-def pricetaker_on(date):
+@shared_task(name='pricesource_on')
+def pricesource_on(date):
     get_currency_csv(datetime.datetime.strptime(str(date), '%Y-%m-%d').date())
 
 
 def get_currency_csv(date):
-    pricetakers = Pricetaker.objects.all()
-    for index, source in enumerate(pricetakers):
+    pricesources = Pricesource.objects.all()
+    for index, source in enumerate(pricesources):
         source_get = f"{source.data_source}&date_end={str(date.strftime('%d.%m.%Y'))}&date_start={str(date.strftime('%d.%m.%Y'))}&bank={source.short_name}"
         data = pd.read_csv(source_get, sep=";", decimal=',')
         data.drop(columns=['Data'], inplace=True)

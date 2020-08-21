@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 
 # Https turn ON/OFF
 os.environ['HTTPS'] = "on"
-os.environ['wsgi.url_scheme'] = 'https'
+os.environ['wsgi.url_scheme'] = "https"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'apps.banks.apps.BanksConfig',
     'apps.statistics.apps.StatisticsConfig',
     'apps.reports.apps.ReportsConfig',
-    'apps.pricetaker.apps.PricetakerConfig',
+    'apps.pricesource.apps.PricesourceConfig',
     'apps.notification.apps.NotificationConfig',
 ]
 
