@@ -6,7 +6,7 @@ from django.conf import settings
 from rest_framework import status
 from .models import Bank, Coin, Rate
 
-# # New task created in apps.pricetaker.tasks # #
+# # New task created in apps.pricesource.tasks # #
 # @shared_task(name="create_rates")
 # def create_rates(date):
 #     """ Authorize to BANK PARSER and request rates """

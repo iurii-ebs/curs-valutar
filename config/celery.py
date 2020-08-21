@@ -25,7 +25,7 @@ app.conf.timezone = settings.TIME_ZONE
 
 app.conf.beat_schedule = {
     'create_rates_daily': {
-        'task': 'pricetaker_trigger',
+        'task': 'pricesource_trigger',
         'schedule': crontab(minute=0, hour=[7, 8, 9, 10, 12, 14, 16], day_of_week='1-5')
     },
 
