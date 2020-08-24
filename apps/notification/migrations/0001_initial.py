@@ -12,10 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Load',
+            name='CustomContentType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(blank=True)),
+                ('type', models.CharField(max_length=10)),
+                ('description', models.CharField(max_length=50)),
             ],
         ),
     ]

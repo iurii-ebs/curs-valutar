@@ -7,6 +7,7 @@ from sklearn.linear_model import LinearRegression
 from apps.statistics.models import RatesPrediction, RatesPredictionText
 from apps.wallet.models import Currency, RatesHistory
 from apps.wallet.models import Wallet
+from apps.notification.models import CustomContentType
 
 
 @shared_task(name='update_rate_prediction')
@@ -45,7 +46,7 @@ def model_predict_linear(currency_id, rates_sequence, days_to_predict_left, inde
     yesterday_rate_new_coord_x = [tomorrow_rates_coord_y[-1]]
     tomorrow_rate_new_coord_y = linear_model.predict(yesterday_rate_new_coord_x)[0][
         0]  # Based on previous data linear model will generate a most likely Y continuation
-    rates_sequence += [tomorrow_rate_new_coord_y]  # Append the new predicted sell_rate to initial array rates_sequence
+    rates_sequence += [round(tomorrow_rate_new_coord_y, 4)]  # Append the new predicted sell_rate to initial array rates_sequence
     if days_to_predict_left == 1:  # Entire function predicts +1 day recursively, recursion breaks when there are no more days left to predict
         analyst_agent(currency_id, rates_sequence,
                       index_predicted_days)  # Send currency ID which was predicted and old rates + new rates to analyst_agent()
@@ -64,7 +65,7 @@ def create_rate_predictions(currency_id, rates_future):
     for day, rate_future in enumerate(rates_future):
         RatesPrediction.objects.create(
             currency=currency,
-            rate_sell=rate_future,
+            rate_sell=round(rate_future, 2),
             date=datetime.date.today() + datetime.timedelta(day + 1)
         )
 
@@ -88,10 +89,15 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
     """
     notification_verb = f'{currency.name} from {currency.bank} is expected to {"fall" if percentage_growth < 0 else "rise"} by {abs(expected_rate_growth):.2f}¢ ({percentage_growth:.2f}% {"DOWN" if percentage_growth < 0 else "UP"}), for the next {days_predicted} days from {rate_today:.3f} to {rate_end:.3f}'
     wallets = Wallet.objects.all()
+    content_type = CustomContentType.objects.get(id=1)
     for wallet in wallets:
         RatesPredictionText.objects.create(
             currency=currency,
             message=notification_verb,
         )
         if wallet.currency.id == currency.id:
-            notify.send(wallet.user, recipient=wallet.user, verb=notification_verb, target=currency)
+            notify.send(wallet.user,
+                        recipient=wallet.user,
+                        action_object=content_type,
+                        verb=notification_verb,
+                        target=currency)

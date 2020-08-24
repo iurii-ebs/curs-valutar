@@ -23,8 +23,8 @@ urlpatterns = [
     path('wallets/', include("apps.wallet.urls")),
     path('reports/', include("apps.reports.urls")),
     path('accounts/', include('apps.accounts.urls')),
+    path('notification/', include("apps.notification.urls")),
     path('exchange/', include("apps.exchange.urls")),
     path('statistics/', include("apps.statistics.urls")),
-    path('notifications/', include('notifications.urls', namespace='notifications')),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
