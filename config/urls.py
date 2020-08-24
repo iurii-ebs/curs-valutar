@@ -22,6 +22,7 @@ urlpatterns = [
     path('banks/', include("apps.banks.urls")),
     path('wallets/', include("apps.wallet.urls")),
     path('reports/', include("apps.reports.urls")),
+    path('accounts/', include('apps.accounts.urls')),
     path('notification/', include("apps.notification.urls")),
     path('exchange/', include("apps.exchange.urls")),
     path('statistics/', include("apps.statistics.urls")),

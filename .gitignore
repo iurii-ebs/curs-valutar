@@ -136,3 +136,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+firebase-admin-config.json
+firebase-config.json
