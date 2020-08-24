@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
@@ -16,6 +17,12 @@ schema_view = get_schema_view(
     permission_classes=(AllowAny,)
 )
 
+from rest_framework.routers import DefaultRouter
+from fcm_django.api.rest_framework import FCMDeviceViewSet, FCMDeviceAuthorizedViewSet
+
+router = DefaultRouter()
+router.register(r'push', FCMDeviceViewSet)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include("apps.users.urls")),
@@ -27,4 +34,5 @@ urlpatterns = [
     path('exchange/', include("apps.exchange.urls")),
     path('statistics/', include("apps.statistics.urls")),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path(r'devices/', include(router.urls)),
 ]

@@ -36,8 +36,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = ['*']
-
 SECURE_SSL_REDIRECT = False
 
 # SESSION_COOKIE_SECURE = True
@@ -60,6 +58,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'notifications',
     'drf_yasg',
+    'fcm_django',
 
     # Local
     'apps.commons.apps.CommonsConfig',
@@ -74,7 +73,28 @@ INSTALLED_APPS = [
     'apps.notification.apps.NotificationConfig',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
+
+ALLOWED_HOSTS = [
+    "127.0.0.1"
+]
+
+CORS_ORIGIN_WHITELIST = [
+    "http://127.0.0.1:8001",
+    "http://127.0.0.1:8015",
+    "http://localhost:8001",
+    "http://localhost:8015"
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
 CORS_ALLOW_HEADERS = (
     'accept',
     'accept-encoding',
@@ -274,3 +294,7 @@ WKHTMLTOPDF_CMD_OPTIONS = {
 WKHTMLTOPDF_CMD = '/usr/local/bin/wkhtmltopdf'
 
 ELASTICSEARCHENABLED = False
+
+FCM_DJANGO_SETTINGS = {
+    "FCM_SERVER_KEY": os.getenv('FCM_SERVER_KEY')
+}
