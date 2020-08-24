@@ -26,22 +26,22 @@ app.conf.timezone = settings.TIME_ZONE
 app.conf.beat_schedule = {
     'create_rates_daily': {
         'task': 'pricesource_trigger',
-        'schedule': crontab(minute=0, hour=[7, 8, 9, 10, 12, 14, 16], day_of_week='1-5')
+        'schedule': crontab(minute=0, hour=[7, 8, 9, 10, 12, 14, 16], day_of_week='0-6')
     },
 
     'rate-prediction-daily': {
         'task': 'update_rate_prediction',
-        'schedule': crontab(minute=30, hour=9, day_of_week='1-5'),
+        'schedule': crontab(minute=30, hour=9, day_of_week='0-6'),
         'args': (7,)
     },
 
     'gen-static-graphs-all': {
         'task': 'gen_static_graphs_all',
-        'schedule': crontab(minute=40, hour=9, day_of_week='1-5')
+        'schedule': crontab(minute=40, hour=9, day_of_week='0-6')
     },
 
     'mail_reports_daily': {
         'task': 'send_email_reports',
-        'schedule': crontab(minute=0, hour=[10, 11], day_of_week='1-5')
+        'schedule': crontab(minute=0, hour=[10, 11], day_of_week='0-6')
     },
 }
