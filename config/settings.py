@@ -66,6 +66,8 @@ INSTALLED_APPS = [
     'apps.wallet.apps.WalletConfig',
     'apps.users.apps.UsersConfig',
     'apps.banks.apps.BanksConfig',
+    'apps.exchange',
+    'apps.accounts',
     'apps.statistics.apps.StatisticsConfig',
     'apps.reports.apps.ReportsConfig',
     'apps.pricetaker.apps.PricetakerConfig',
