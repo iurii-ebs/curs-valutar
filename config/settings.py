@@ -76,7 +76,8 @@ INSTALLED_APPS = [
 CORS_ORIGIN_ALLOW_ALL = False
 
 ALLOWED_HOSTS = [
-    "127.0.0.1"
+    "127.0.0.1",
+    "live.curs-valutar.xyz"
 ]
 
 CORS_ORIGIN_WHITELIST = [

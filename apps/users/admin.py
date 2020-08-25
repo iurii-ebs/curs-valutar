@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from apps.users.models import AlertPreference
+
+
+@admin.register(AlertPreference)
+class AlertPreferenceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'percentage_down', 'percentage_down_forecast', 'days_forecast',)
+    search_fields = ('id',)

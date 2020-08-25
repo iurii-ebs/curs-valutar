@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 from apps.users import serializers
 from apps.users import tokens
+from apps.users.models import AlertPreference
 from .tasks import email_account_activation, email_password_reset
 
 
@@ -55,6 +56,8 @@ class RegisterView(GenericAPIView):
         user_new = User.objects.create(is_active=False, **serializer.validated_data)
         user_new.set_password(serializer.validated_data['password'])
         user_new.save()
+
+        AlertPreference.objects.create(user=user_new)
 
         email_account_activation.delay(
             user_pk=user_new.pk,

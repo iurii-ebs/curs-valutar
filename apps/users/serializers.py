@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
+from apps.users.models import AlertPreference
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +28,9 @@ class PasswordChangeSerializer(serializers.Serializer):
             raise ValidationError("Passwords aren't equal")
 
         return attrs
+
+
+class AlertPreferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlertPreference
+        fields = '__all__'
