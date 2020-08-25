@@ -21,7 +21,7 @@ from rest_framework.routers import DefaultRouter
 from fcm_django.api.rest_framework import FCMDeviceViewSet, FCMDeviceAuthorizedViewSet
 
 router = DefaultRouter()
-router.register(r'push', FCMDeviceViewSet)
+router.register(r'', FCMDeviceViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +33,6 @@ urlpatterns = [
     path('notification/', include("apps.notification.urls")),
     path('exchange/', include("apps.exchange.urls")),
     path('statistics/', include("apps.statistics.urls")),
+    path('devices/', include(router.urls)),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path(r'devices/', include(router.urls)),
 ]
