@@ -4,7 +4,8 @@ from django.conf.urls import url
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
-
+from rest_framework.routers import DefaultRouter
+from fcm_django.api.rest_framework import FCMDeviceViewSet, FCMDeviceAuthorizedViewSet
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -17,8 +18,6 @@ schema_view = get_schema_view(
     permission_classes=(AllowAny,)
 )
 
-from rest_framework.routers import DefaultRouter
-from fcm_django.api.rest_framework import FCMDeviceViewSet, FCMDeviceAuthorizedViewSet
 
 router = DefaultRouter()
 router.register(r'', FCMDeviceViewSet)

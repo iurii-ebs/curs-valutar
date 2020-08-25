@@ -8,6 +8,8 @@ from apps.statistics.models import RatesPrediction, RatesPredictionText
 from apps.wallet.models import Currency, RatesHistory
 from apps.wallet.models import Wallet
 from apps.notification.models import CustomContentType
+from apps.users.models import AlertPreference
+from apps.commons.tasks import push_notify
 
 
 @shared_task(name='update_rate_prediction')
@@ -75,29 +77,42 @@ def analyst_agent(currency_id, rates_past_future, days_predicted):
     Analyst agent will calculate expected % and $ growth then forward new + old data to the notification_agent()
     """
     currency = Currency.objects.get(id=currency_id)
+    rate_yesterday = rates_past_future[:-days_predicted][-2]
     rate_today = rates_past_future[:-days_predicted][-1]
     rate_end = rates_past_future[-1]
+    rate_growth_last_day = rate_today - rate_yesterday
     expected_rate_growth = rate_end - rate_today
+    percentage_growth_last_day = 100 * float(rate_growth_last_day) / float(rate_yesterday)
     percentage_growth = 100 * float(expected_rate_growth) / float(rate_today)
-    notification_agent(currency, expected_rate_growth, percentage_growth, days_predicted, rate_today, rate_end)
+    notification_agent(currency, expected_rate_growth, percentage_growth, days_predicted, rate_today, rate_end, percentage_growth_last_day)
 
 
-def notification_agent(currency, expected_rate_growth, percentage_growth, days_predicted, rate_today, rate_end):
+def notification_agent(currency, expected_rate_growth, percentage_growth, days_predicted, rate_today, rate_end, percentage_growth_last_day):
     """
     Notification agent will generate a message which will look like:
     'US Dollar from Moldova Agroindbank is expected to rise by 0.32¢ (1.88% UP), for the next 7 days from 17.200 to 17.523'
     """
     notification_verb = f'{currency.name} from {currency.bank} is expected to {"fall" if percentage_growth < 0 else "rise"} by {abs(expected_rate_growth):.2f}¢ ({percentage_growth:.2f}% {"DOWN" if percentage_growth < 0 else "UP"}), for the next {days_predicted} days from {rate_today:.3f} to {rate_end:.3f}'
     wallets = Wallet.objects.all()
+    preferences = AlertPreference.objects.all()
+
     content_type = CustomContentType.objects.get(id=1)
     for wallet in wallets:
-        RatesPredictionText.objects.create(
+        user_alert_preferences = preferences.filter(user=wallet.user).first()
+        trigger_forecast = getattr(user_alert_preferences, 'percentage_down_forecast', 0)
+        trigger_last_day = getattr(user_alert_preferences, 'percentage_down', 0)
+        RatesPredictionText.objects.get_or_create(
             currency=currency,
             message=notification_verb,
         )
-        if wallet.currency.id == currency.id:
+        if wallet.currency_id == currency.id:
             notify.send(wallet.user,
                         recipient=wallet.user,
                         action_object=content_type,
                         verb=notification_verb,
                         target=currency)
+            if trigger_forecast is not 0 and percentage_growth < 0 and abs(percentage_growth) > trigger_forecast:
+                push_notify(user=wallet.user, title=f"Price forecast alert", message=f"Warning price for {currency.name} is expected to fall by {round(percentage_growth, 2)}% by the next week.")
+
+            if trigger_last_day is not 0 and percentage_growth_last_day < 0 and abs(percentage_growth_last_day) > trigger_last_day:
+                push_notify(user=wallet.user, title="Price fall alert", message=f"Warning price for {currency.name} fell by {round(percentage_growth_last_day, 2)}%")

@@ -23,16 +23,16 @@ class CurrencyAdmin(admin.ModelAdmin):
 @admin.register(RatesHistory)
 class RatesHistoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'currency', 'rate_sell', 'rate_buy', 'date',)
-    search_fields = ('id', 'currency', 'rate_sell', 'rate_buy', 'date',)
+    search_fields = ('id',)
 
 
 @admin.register(Wallet)
 class WalletAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'currency',)
-    search_fields = ('id', 'user', 'currency',)
+    search_fields = ('id', 'user__username', 'currency',)
 
 
 @admin.register(WalletOperation)
 class WalletOperationAdmin(admin.ModelAdmin):
     list_display = ('id', 'wallet', 'currency', 'rate', 'amount',)
-    search_fields = ('id', 'wallet', 'currency', 'rate', 'amount',)
+    search_fields = ('id', 'wallet', 'rate', 'amount',)
