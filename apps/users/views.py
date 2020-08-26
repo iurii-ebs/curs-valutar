@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
 
 from apps.users import serializers
 from apps.users import tokens
@@ -20,6 +21,43 @@ class ProfileView(GenericAPIView):
 
     def get(self, request):
         return Response(self.serializer_class(request.user).data)
+
+    @swagger_auto_schema(request_body=serializers.UserUpdateSerializer)
+    def put(self, request):
+        serializer = serializers.UserUpdateSerializer(request.user, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors)
+
+
+class AlertPreferencesView(GenericAPIView):
+    serializer_class = serializers.AlertPreferenceSerializer
+    permission_classes = [IsAuthenticated]
+
+    operation_description = "User alert preferences. \
+                'percentage_down' - Sudden price dip alert, default 3%. \
+                'percentage_down_forecast' - Expected price drop alert, default 3%."
+
+    @swagger_auto_schema(operation_description=operation_description)
+    def get(self, request):
+        queryset = AlertPreference.objects.get(user=request.user)
+        serializer = serializers.AlertPreferenceSerializer(queryset)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=serializers.AlertPreferenceSerializer,
+                         operation_description=operation_description)
+    def put(self, request):
+        queryset = AlertPreference.objects.get(user=request.user)
+        serializer = serializers.AlertPreferenceSerializer(queryset, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors)
 
 
 class RegisterView(GenericAPIView):

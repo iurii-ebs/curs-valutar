@@ -3,9 +3,10 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 
 from apps.exchange.models import Bank, Coin, Rate
-from apps.exchange.filtersets import BankFilterSet, CoinFilterSet, RateFilterSet
+from apps.exchange.filtersets import BankFilterSet, CoinFilterSet, RateFilterSet, RatesPredictionFilterSet
 from apps.exchange.serializers import BankSerializer, CoinSerializer, RateSerializer
-
+from apps.statistics.models import RatesPrediction
+from apps.statistics.serializers import RatesPredictionSerializer
 
 class BankListView(ListAPIView):
     queryset = Bank.objects.all()
@@ -29,3 +30,11 @@ class RateListView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_class = RateFilterSet
+
+
+class RatesPredictionListView(ListAPIView):
+    queryset = RatesPrediction.objects.all()
+    serializer_class = RatesPredictionSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RatesPredictionFilterSet

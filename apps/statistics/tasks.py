@@ -111,8 +111,8 @@ def notification_agent(currency, expected_rate_growth, percentage_growth, days_p
                         action_object=content_type,
                         verb=notification_verb,
                         target=currency)
-            if trigger_forecast is not 0 and percentage_growth < 0 and abs(percentage_growth) > trigger_forecast:
+            if trigger_forecast != 0 and percentage_growth < 0 and abs(percentage_growth) > trigger_forecast:
                 push_notify(user=wallet.user, title=f"Price forecast alert", message=f"Warning price for {currency.name} is expected to fall by {round(percentage_growth, 2)}% by the next week.")
 
-            if trigger_last_day is not 0 and percentage_growth_last_day < 0 and abs(percentage_growth_last_day) > trigger_last_day:
+            if trigger_last_day != 0 and percentage_growth_last_day < 0 and abs(percentage_growth_last_day) > trigger_last_day:
                 push_notify(user=wallet.user, title="Price fall alert", message=f"Warning price for {currency.name} fell by {round(percentage_growth_last_day, 2)}%")
