@@ -1,5 +1,6 @@
 from django_filters import FilterSet
 from apps.exchange.models import Bank, Coin, Rate
+from apps.statistics.models import RatesPrediction
 
 
 class BankFilterSet(FilterSet):
@@ -51,6 +52,25 @@ class RateFilterSet(FilterSet):
                 'exact', 'gt', 'lt', 'gte', 'lte',
             ],
             'rate_buy': [
+                'exact', 'gt', 'lt', 'gte', 'lte',
+            ],
+            'date': [
+                'exact', 'gt', 'lt', 'gte', 'lte',
+            ],
+            'currency': [
+                'exact', 'in',
+            ],
+        }
+
+
+class RatesPredictionFilterSet(FilterSet):
+    class Meta:
+        model = RatesPrediction
+        fields = {
+            'id': [
+                'exact', 'in',
+            ],
+            'rate_sell': [
                 'exact', 'gt', 'lt', 'gte', 'lte',
             ],
             'date': [
