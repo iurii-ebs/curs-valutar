@@ -15,6 +15,18 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'username')
+        extra_kwargs = {
+            'first_name': {'required': False, 'allow_blank': True},
+            'last_name': {'required': False, 'allow_blank': True},
+            'email': {'required': False, 'allow_blank': True},
+            'username': {'required': False, 'allow_blank': False}
+        }
+
+
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True, allow_blank=False)
 
@@ -33,4 +45,4 @@ class PasswordChangeSerializer(serializers.Serializer):
 class AlertPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlertPreference
-        fields = '__all__'
+        fields = ('percentage_down', 'percentage_down_forecast')
