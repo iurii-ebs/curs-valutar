@@ -30,7 +30,7 @@ class RatesHistory(BaseModel):
     )
     rate_sell = models.FloatField()
     rate_buy = models.FloatField()
-    date = models.DateField(db_index=True)
+    date = models.DateField(db_index=True, null=True)
 
     def es_doc(self):
         return {

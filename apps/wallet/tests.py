@@ -43,11 +43,11 @@ class WalletTests(TestCase):
 
         # Rates history table test data
         ratehistory1 = RatesHistory.objects.create(
-            currency=testcurrency1, rate_sell='11.8621', rate_buy='11.9615'
+            currency=testcurrency1, rate_sell='11.8621', rate_buy='11.9615', date=datecreated.today()
         )
         ratehistory1.save()
         ratehistory2 = RatesHistory.objects.create(
-            currency=testcurrency1, rate_sell='11.9621', rate_buy='12.0000'
+            currency=testcurrency1, rate_sell='11.9621', rate_buy='12.0000', date=datecreated.today()
         )
         ratehistory2.save()
 
