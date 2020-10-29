@@ -1,6 +1,5 @@
 import datetime
 import os
-
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np

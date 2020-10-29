@@ -5,7 +5,6 @@ import os
 from celery import Celery
 from celery.schedules import crontab
 from django.conf import settings
-import datetime
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
@@ -31,7 +30,7 @@ app.conf.beat_schedule = {
 
     'rate-prediction-daily': {
         'task': 'update_rate_prediction',
-        'schedule': crontab(minute=30, hour=9, day_of_week='0-6'),
+        'schedule': crontab(minute=0, hour=9, day_of_week='0-6'),
         'args': (7,)
     },
 
