@@ -1,9 +1,9 @@
-from datetime import date as datecreated
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.reverse import reverse
-from rest_framework.test import APIClient
+from rest_framework.test import APITestCase, APIClient
 
 from apps.wallet.models import (Currency,
                                 Bank,
@@ -12,53 +12,45 @@ from apps.wallet.models import (Currency,
                                 WalletOperation)
 
 
-class WalletTests(TestCase):
+class WalletTests(APITestCase):
     """ Database tests """
 
-    @classmethod
-    def setUpTestData(cls):
-        # User table test data
-        testuser1 = User.objects.create_user(
-            username='testuser1', email='testuser1@example.com', password='password123'
-        )
-        testuser1.save()
+    def setUp(self):
+        self.client = APIClient()
+        self.test_user1 = User.objects.create(username='user')
+        self.test_user1.set_password('password')
+        self.client.force_authenticate(self.test_user1)
 
         # Bank table test data
-        testbank1 = Bank.objects.create(
+        self.test_bank1 = Bank.objects.create(
             registered_name='Victoriabank', short_name='VB', website='https://www.victoriabank.md/ro/currency-history'
         )
-        testbank1.save()
 
-        # Currency table test data
-        testcurrency1 = Currency.objects.create(
-            bank=testbank1, name='Australian Dollar', abbr='AUD'
+        self.test_currency1 = Currency.objects.create(
+            bank=self.test_bank1,
+            name='Australian Dollar',
+            abbr='AUD'
         )
-        testcurrency1.save()
 
-        # Wallet table test data
         wallet1 = Wallet.objects.create(
-            user=testuser1, currency=testcurrency1
+            user=self.test_user1,
+            currency=self.test_currency1
         )
-        wallet1.save()
 
         # Rates history table test data
-        ratehistory1 = RatesHistory.objects.create(
-            currency=testcurrency1, rate_sell='11.8621', rate_buy='11.9615'
+        rate_history1 = RatesHistory.objects.create(
+            currency=self.test_currency1, rate_sell='11.8621', rate_buy='11.9615', date=date.today()
         )
-        ratehistory1.save()
-        ratehistory2 = RatesHistory.objects.create(
-            currency=testcurrency1, rate_sell='11.9621', rate_buy='12.0000'
-        )
-        ratehistory2.save()
+        rate_history1.save()
 
         # Wallet operations table test data
         walletoperations1 = WalletOperation.objects.create(
-            wallet=wallet1, currency=testcurrency1, rate=ratehistory1, amount=100000
+            wallet=wallet1, currency=self.test_currency1, rate=rate_history1, amount=100000
         )
         walletoperations1.save()
 
         walletoperations2 = WalletOperation.objects.create(
-            wallet=wallet1, currency=testcurrency1, rate=ratehistory1, amount=70000
+            wallet=wallet1, currency=self.test_currency1, rate=rate_history1, amount=70000
         )
         walletoperations2.save()
 
@@ -83,7 +75,6 @@ class WalletTests(TestCase):
         date = f'{rate_history.date}'
         self.assertEqual(currency, f'{Currency.objects.get(id=1)}')
         self.assertEqual(rate_sell, '11.8621')
-        self.assertEqual(date, f'{datecreated.today()}')
 
     def test_wallet_operations(self):
         wallet_operations = WalletOperation.objects.filter(wallet=1)
