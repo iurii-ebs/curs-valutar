@@ -55,7 +55,7 @@ humanize==2.5.0
 idna==2.10
 inflection==0.5.0
 itypes==1.2.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 joblib==0.16.0
 jsonfield==3.1.0
 jsonschema==3.2.0
