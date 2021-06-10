@@ -17,7 +17,7 @@ cycler==0.10.0
 decorator==4.4.2
 defusedxml==0.6.0
 dj-rest-auth==1.1.0
-Django==3.0.8
+Django==3.1.12
 django-allauth==0.42.0
 django-cors-headers==3.4.0
 django-filter==2.3.0
